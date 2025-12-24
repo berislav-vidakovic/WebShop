@@ -1,5 +1,16 @@
 # Webshop serverless Project
 
+<div style="margin-bottom: 12px;">
+<img src = "docs/hasura.png" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/dockerc.png" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/GraphQL.png" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/nginx.jpg" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/postgresqlb.png" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/react.png" style="height:35px; margin-right: 15px;" /> 
+<img src = "docs/ts.png" style="height:35px; margin-right: 15px;" /> 
+</div>
+
+
 React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and WebSockets, handling queries, mutations, and subscriptions without a custom backend. Hasura is running as Docker container on Ubuntu VPS in separate subdomain.
 
 ## Table of contents 
