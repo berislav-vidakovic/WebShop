@@ -12,13 +12,22 @@
 
 
 React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and WebSockets, handling queries, mutations, and subscriptions without a custom backend. Hasura is running as Docker container on Ubuntu VPS in separate subdomain.
+- Full PostgreSQL schema with multiple tables, relationships, and data loaded
+- Saved views for queries and sanity checks
+- ERD generated and ready to showcase database design
+- Docker installed and verified on Ubuntu, with Hasura running in a container
+- Hasura connected securely to PostgreSQL, including handling of container IPs and pg_hba.conf
+- TLS setup with Nginx and a subdomain for secure HTTPS access
+- Hasura Console running, queries, mutations, and subscriptions tested
+- React + TypeScript frontend working with Hasura over HTTPS and WebSockets
+
 
 ## Table of contents 
 
 1. [Create PostgreSQL Database and Populate Tables](#1-create-postgresql-database-and-populate-tables)
 2. [Introduce Docker](#2-introduce-docker)
 3. [Introduce Hasura](#3-introduce-hasura)
-4. [Enable TLS Access to Hasura](#4-enable-tls-access-to-hasura)
+4. [Enable TLS to Hasura](#4-enable-tls-to-hasura)
 5. [Build Frontend Skeleton (React + TypeScript)](#5-build-frontend-skeleton-react--typescript)
 
 ## 1. Create PostgreSQL database and populate tables
@@ -212,7 +221,7 @@ GPG, or GNU Privacy Guard, is a public key cryptography implementation. This all
   ```
 
 
-## 4. Enable TLS access to Hasura
+## 4. Enable TLS to Hasura
 
 Hasura runs in Docker and is exposed via a dedicated subdomain using Nginx as a reverse proxy with TLS termination via Let’s Encrypt.
 
