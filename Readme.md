@@ -1,6 +1,6 @@
-# Hasura Webshop Project
+# Webshop serverless Project
 
-I built a React + TypeScript frontend using Apollo Client that connects to Hasura via GraphQL over HTTPS and WebSockets, handling queries, mutations, and subscriptions without a custom backend.
+React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and WebSockets, handling queries, mutations, and subscriptions without a custom backend. Hasura is running as Docker container on Ubuntu VPS in separate subdomain.
 
 ## Table of contents 
 
@@ -8,11 +8,11 @@ I built a React + TypeScript frontend using Apollo Client that connects to Hasur
 2. [Introduce Docker](#2-introduce-docker)
 3. [Introduce Hasura](#3-introduce-hasura)
 4. [Enable TLS Access to Hasura](#4-enable-tls-access-to-hasura)
-5. [Build Frontend Skeleton (React + TypeScript + Apollo)](#5-build-frontend-skeleton-react--typescript--apollo)
+5. [Build Frontend Skeleton (React + TypeScript)](#5-build-frontend-skeleton-react--typescript)
 
 ## 1. Create PostgreSQL database and populate tables
 
-
+![ERD diagram](data/ERD.png)
 
 - Create DB and schema
   ```bash
@@ -257,7 +257,7 @@ TODO
 - Add admin secret to Hasura
 - Create roles (user, admin)
 
-## 5. Build Frontend skeleton React + TypeScript + Apollo
+## 5. Build Frontend skeleton React + TypeScript
 
 - Create project skeleton
 	```bash
@@ -282,8 +282,22 @@ TODO
   ```
 
 - Link to Remote Repo on Github
-  ```bash
-  git init
-  git add .
+  - Initialize git
+    ```bash
+    git init
+    git add .
+    git commit -m "Initial commit"
+    ```
+  - Create Remote repo
+  - Link and verify
+    ```bash
+    git remote add origin git@github.com:berislav-vidakovic/WebShop.git
+    git remote -v
+    ```
   
-  ```
+  - Push code (--set-upstream or -u flag)
+    ```bash
+    git push -u origin main
+    ```
+
+- Add query and call it from App.txs
