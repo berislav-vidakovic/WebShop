@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchCustomers, fetchOrdersAll, fetchProducts } from './graphQL/queries'
+import { fetchCustomers,  fetchProducts } from './graphQL/queries'
 import type { Customer, OrderView, Product } from './interfaces'
 import './style.css'
-
+import { useOrdersSubscription } from './graphQL/subscriptions';
 
 function App() {
   const [currentTable, setCurrentTable] = useState<"Customers" | "Products">("Customers");
@@ -14,11 +14,10 @@ function App() {
   useEffect(() => {
     fetchCustomers().then(setCustomers);
     fetchProducts().then(setProducts);
-    fetchOrdersAll().then(setOrdersMaster);
+    //fetchOrdersAll().then(setOrdersMaster);
   }, []) 
 
-  const format4columns = ['80px','1fr','1fr','1fr'];
-  
+  const format4columns = ['80px','1fr','1fr','1fr'];  
   
   const currentColumns = () => {
     return currentTable === 'Customers'
@@ -26,7 +25,11 @@ function App() {
     : ['80px','200px','1fr','150px','100px'];  // 5 columns for products
   }
 
-return (
+  useEffect(() => {
+    useOrdersSubscription(setOrdersMaster);
+  }, [])
+
+ return (
     <div className="app">
       <div>
         <h2>{currentTable}</h2>
