@@ -2,6 +2,14 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { OrderView } from '../interfaces'
 import { createClient } from 'graphql-ws';
 
+interface OrdersAllVResponse {
+  orders_all_v: {
+    order_id: number;
+    customer: string;
+    products: number;
+    amount_usd: number;
+  }[];
+}
 
 export function useOrdersSubscription(
   setOrdersMaster: Dispatch<SetStateAction<OrderView[]>> ) {
@@ -26,7 +34,10 @@ export function useOrdersSubscription(
     {
       next: (data) => {
         if (!data.data) return;
-        const mapped: OrderView[] = data.data.orders_all_v.map((o: any) => ({
+
+        const payload = data as unknown as { data: OrdersAllVResponse };
+
+        const mapped: OrderView[] = payload.data.orders_all_v.map((o) => ({
           id: o.order_id,
           customer: o.customer,
           products: o.products,
