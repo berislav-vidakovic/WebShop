@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchCustomers, fetchProducts } from './graphQL/queries'
-import type { Customer, Product } from './interfaces'
+import { fetchCustomers, fetchOrdersAll, fetchProducts } from './graphQL/queries'
+import type { Customer, OrderView, Product } from './interfaces'
 import './style.css'
 
 
@@ -9,10 +9,12 @@ function App() {
   const [currentTable, setCurrentTable] = useState<"Customers" | "Products">("Customers");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [ordersMaster, setOrdersMaster] = useState<OrderView[]>([]);
 
   useEffect(() => {
     fetchCustomers().then(setCustomers);
     fetchProducts().then(setProducts);
+    fetchOrdersAll().then(setOrdersMaster);
   }, []) 
 
   const format4columns = ['80px','1fr','1fr','1fr'];
@@ -115,37 +117,24 @@ return (
           Last update: Monday, December the 22nd 2025
         </label>
 
-        {/* Add New table - Grid */}
         {/* Order overview table */}
         <div className="grid-container">
-<div className="grid grid-order">
-  <div className="grid-header">ID</div>
-  <div className="grid-header">Customer</div>
-  <div className="grid-header">Products</div>
-  <div className="grid-header">Amount USD</div>
+          <div className="grid grid-order">
+            <div className="grid-header">ID</div>
+            <div className="grid-header">Customer</div>
+            <div className="grid-header">Products</div>
+            <div className="grid-header">Amount USD</div>
 
-  <div className="grid-row">
-    <div>1</div>
-    <div>Acme Corp</div>
-    <div>Keyboard, Mouse</div>
-    <div>120.50</div>
-  </div>
-
-  <div className="grid-row">
-    <div>2</div>
-    <div>Globex</div>
-    <div>Monitor</div>
-    <div>299.99</div>
-  </div>
-
-  <div className="grid-row">
-    <div>3</div>
-    <div>Initech</div>
-    <div>Laptop, Dock</div>
-    <div>1,450.00</div>
-  </div>
-</div>
-</div>
+            {ordersMaster.map(o => (
+              <div className="grid-row" key={o.id}>
+                <div>{o.id}</div>
+                <div>{o.customer}</div>
+                <div>{o.products}</div>
+                <div>{o.amountUSD}</div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         
       </div>

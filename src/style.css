@@ -63,7 +63,7 @@
   grid-template-columns: 
     80px     /* ID */
     1.5fr    /* Customer */
-    2fr      /* Products */
+    1fr      /* Products */
     1fr;     /* Amount USD */
   background-color: #cfc;
   width: max-content;

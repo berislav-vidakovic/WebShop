@@ -10,5 +10,12 @@ export interface Product{
   name: string,
   description: string,
   manufacturer: string,
-  priceUSD: number
+  priceUSD: string
+}
+
+export interface OrderView{
+  id: number,
+  customer: string,
+  products: number,
+  amountUSD: string
 }
