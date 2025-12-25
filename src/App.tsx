@@ -151,7 +151,12 @@ function App() {
 
       </div>
       <div>
-        <h2>Order overview</h2>
+        <h2>Total Orders USD: {ordersMaster
+                        .map(o => Number(o.amountUSD.replace(/,/g, '')))
+                        .reduce((curr,sum) => Number(sum) + Number(curr), 0)
+                        .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+                        }
+        </h2>
         <hr />        
 
         <label>

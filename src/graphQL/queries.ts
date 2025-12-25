@@ -81,7 +81,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
       name: p.name,
       description: p.description,
       manufacturer: p.manufacturer,
-      priceUSD: p.price_usd.toFixed(2)
+      priceUSD: p.price_usd.toLocaleString('en-US', { 
+              minimumFractionDigits: 2, 
+              maximumFractionDigits: 2 
+            })
     }));
 
     return data;

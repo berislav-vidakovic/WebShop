@@ -87,7 +87,10 @@ export function useOrdersSubscription(
             id: o.id,
             customer: o.customer.name,
             products: totalProducts,
-            amountUSD: totalAmount.toFixed(2),
+            amountUSD: totalAmount.toLocaleString('en-US', { 
+              minimumFractionDigits: 2, 
+              maximumFractionDigits: 2 
+            })
           };
         });
         
