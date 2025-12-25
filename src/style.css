@@ -76,3 +76,14 @@
   margin: 16px 0;          /* optional spacing */
 }
 
+.cell-center, 
+.grid-row .cell-center
+ {
+  text-align: center;
+}
+
+.cell-right,
+.grid-row .cell-right
+{
+  text-align: right;
+}
