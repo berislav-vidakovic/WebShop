@@ -19,3 +19,10 @@ export interface OrderView{
   products: number,
   amountUSD: string
 }
+
+export interface OrderItem{
+  id: number,
+  customer: string,
+  product: string,
+  quantity: number
+}

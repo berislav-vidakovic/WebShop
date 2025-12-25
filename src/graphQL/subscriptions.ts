@@ -24,6 +24,13 @@ SELECT order_id,
    FROM cteordersall
 GROUP BY order_id, customer
 ORDER BY order_id;
+
+Result set:
+----------+-------------+----------+------------
+ order_id |  customer   | products | amount_usd
+----------+-------------+----------+------------
+        1 | Hexagon SIG |        3 |    2398.99
+        2 | Hexagon MI  |        4 |    1948.00
 */
 interface OrdersAllVResponse {
   orders: {
@@ -83,7 +90,6 @@ export function useOrdersSubscription(
             amountUSD: totalAmount.toFixed(2),
           };
         });
-
         
         setOrdersMaster(mapped);
       },

@@ -1,4 +1,4 @@
-import type { Customer, Product, OrderView } from '../interfaces'
+import type { Customer, Product, OrderItem } from '../interfaces'
 
 const hasuraURL = "https://hasura.barryonweb.com/v1/graphql";
 
@@ -18,6 +18,39 @@ export const fetchCustomers = async (): Promise<Customer[]> => {
     const json = await sendGraphQLquery(body);
 
     return json.data.customers as Customer[];
+  } 
+  catch (error) {
+    console.error("Error fetching GraphQL:", error);
+    return [];
+  }
+}
+
+export const fetchOrderItems = async (): Promise<OrderItem[]> => {
+  try {
+    const body : string = JSON.stringify({
+        query: `
+          query GetOrderItems {
+            order_details_v {
+              order_id
+              customer
+              product
+              quantity
+            }
+          }
+        `});
+    const json = await sendGraphQLquery(body);
+
+
+    const data: OrderItem[] = json.data.order_details_v.map((od: any) => ({
+      id: od.order_id,
+      customer: od.customer,
+      product: od.product,
+      quantity: od.quantity
+    }));
+
+    return data;
+
+
   } 
   catch (error) {
     console.error("Error fetching GraphQL:", error);

@@ -1,28 +1,33 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { fetchCustomers,  fetchProducts } from './graphQL/queries'
-import type { Customer, OrderView, Product } from './interfaces'
+import { fetchCustomers,  fetchProducts, fetchOrderItems } from './graphQL/queries'
+import type { Customer, OrderView, Product, OrderItem } from './interfaces'
 import './style.css'
 import { useOrdersSubscription } from './graphQL/subscriptions';
 
 function App() {
-  const [currentTable, setCurrentTable] = useState<"Customers" | "Products">("Customers");
+  const [currentTable, setCurrentTable] = useState<"Customers" | "Products" | "Orders">("Customers");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [ordersMaster, setOrdersMaster] = useState<OrderView[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
 
   useEffect(() => {
     fetchCustomers().then(setCustomers);
     fetchProducts().then(setProducts);
-    //fetchOrdersAll().then(setOrdersMaster);
+    fetchOrderItems().then(setOrderItems);
   }, []) 
 
   const format4columns = ['80px','1fr','1fr','1fr'];  
   
   const currentColumns = () => {
-    return currentTable === 'Customers'
-    ? format4columns
-    : ['80px','200px','1fr','150px','100px'];  // 5 columns for products
+    const formats: Map<string, string[]> = new Map([
+      ["Customers", format4columns],                   
+      ["Products", ['80px','200px','1fr','150px','100px']], 
+      ["Orders", ['100px','1fr','1fr','0.5fr']]       
+    ]);
+
+    return formats.get(currentTable);
   }
 
   useEffect(() => {
@@ -40,7 +45,7 @@ function App() {
           <label>
             <input
               type="radio"
-              value="customers"
+              value="Customers"
               checked={currentTable === 'Customers'}
               onChange={() => setCurrentTable('Customers')}
             />
@@ -50,11 +55,22 @@ function App() {
           <label>
             <input
               type="radio"
-              value="products"
+              value="Products"
               checked={currentTable === 'Products'}
               onChange={() => setCurrentTable('Products')}
             />
             Products
+          </label>
+
+          
+          <label>
+            <input
+              type="radio"
+              value="Orders"
+              checked={currentTable === 'Orders'}
+              onChange={() => setCurrentTable('Orders')}
+            />
+            Order Items
           </label>
         </div>
 
@@ -69,7 +85,7 @@ function App() {
         {currentTable === 'Customers' && (
           <div className="grid-container">
           <div className="grid"
-               style={{ gridTemplateColumns: currentColumns().join(' ') }}
+               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
           >
             <div className="grid-header cell-center">ID</div>
             <div className="grid-header">Name</div>
@@ -90,7 +106,7 @@ function App() {
 
         {currentTable === 'Products' && (
           <div className="grid"
-               style={{ gridTemplateColumns: currentColumns().join(' ') }}
+               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
           >
             <div className="grid-header cell-center">ID</div>
             <div className="grid-header">Name</div>
@@ -108,6 +124,28 @@ function App() {
               </div>
             ))}
           </div>        
+        )}
+
+        {currentTable === 'Orders' && (
+          <div className="grid-container">
+          <div className="grid"
+               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
+          >
+            <div className="grid-header cell-center">Order ID</div>
+            <div className="grid-header">Customer</div>
+            <div className="grid-header">Product</div>
+            <div className="grid-header cell-center">Quantity</div>
+
+            {orderItems.map(oi => (
+              <div className="grid-row" key={oi.id + oi.product}>
+                <div className="cell-center">{oi.id}</div>
+                <div>{oi.customer}</div>
+                <div>{oi.product}</div>
+                <div className="cell-center">{oi.quantity}</div>
+              </div>
+            ))}
+          </div>  
+          </div>      
         )}
 
 
@@ -129,7 +167,10 @@ function App() {
             <div className="grid-header cell-right">Amount USD</div>
 
             {ordersMaster.map(o => (
-              <div className="grid-row" key={o.id}>
+              <div 
+                className= "grid-row"
+                key={o.id}
+              >
                 <div className="cell-center">{o.id}</div>
                 <div>{o.customer}</div>
                 <div className="cell-center">{o.products}</div>
