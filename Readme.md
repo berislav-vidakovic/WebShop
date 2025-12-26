@@ -339,3 +339,13 @@ GraphQL Design Decisions
   npm install graphql-ws
   ```
 
+- On mount call createClient and get Client object 
+- Call Client::subscribe passing query and handling response (map to model) 
+
+## 7. Add pagination to enable rendering large data sets
+
+- Add page state
+  ```ts
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
+  ```

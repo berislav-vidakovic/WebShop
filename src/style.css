@@ -24,10 +24,14 @@
 .table-container {
   display: inline-flex;
   justify-content: center;
-  background-color: #ffc;
+  background-color: #ffd;
   padding: 12px;
   border: #999 1px solid;
   border-radius: 8px;
+}
+
+.master {
+  background-color: #efe;
 }
 
 /* column width adjusted to content */
@@ -73,4 +77,40 @@
 
 .odd-row {
   background-color: #efe;
+}
+
+.odd-row-master{
+  background-color: #ffd;
+}
+
+/* -------------------- Pagination ----------------*/
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.pagination-left,
+.pagination-center,
+.pagination-right {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-center {
+  justify-content: center;
+  flex: 1; /* takes up remaining space */
+}
+
+.pagination a {
+  color: blue;
+  cursor: pointer;
+}
+
+.pagination a.disabled {
+  color: gray;
+  text-decoration: none;
+  cursor: default;
+  pointer-events: none;
 }
