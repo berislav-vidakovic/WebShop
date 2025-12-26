@@ -6,7 +6,11 @@ import './style.css'
 import { useOrdersSubscription } from './graphQL/subscriptions';
 import { Pagination  } from './Pagination'
 import { getTableView } from './views';
-import type { TableType } from './views';
+import type { TableType } from './interfaces';
+import { Customers } from './tables/Customers'
+import { Products } from './tables/Products'
+import { OrderItems } from './tables/Orders'
+import { Selector } from './tables/Selector'
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -16,7 +20,7 @@ function App() {
   const [ordersMaster, setOrdersMaster] = useState<OrderView[]>([]);
 
   const [totalPages, setTotalPages] = useState<number>(0); 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const [paginatedCustomers, setPaginatedCustomers] = useState<Customer[]>([]);
   const [columnWidthsCustomers, setColumnWidthsCustomers] = useState<number[]>([]);
@@ -44,17 +48,11 @@ function App() {
     initializeView(currentTable);
   }, [currentTable, currentPage, customers, products, orderItems]);
 
-
   const goFirst = () => setCurrentPage(1);
   const goPrev = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const goNext = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const goLast = () => setCurrentPage(totalPages);
 
-  // input - customers
-  // output - paginatedCustomers, columnWidthCustomers
-//    const [customers, setCustomers] = useState<Customer[]>([]);
-  //const [products, setProducts] = useState<Product[]>([]);
-  //const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
 
   const setPageCount = ( table: TableType) =>{
     let len = customers.length;
@@ -69,7 +67,6 @@ function App() {
   const initializeView = (table: TableType) => {
     setCurrentTable(table);
     setPageCount(table);    
-    //setCurrentPage(1); 
 
     // compute paginated data
     const { paginatedData, columnWidths } = getTableView(
@@ -95,7 +92,6 @@ function App() {
     }
   }
 
-
  return (
     <div className="app">
       <div>
@@ -103,43 +99,11 @@ function App() {
         <hr />
 
         {/* Radio buttons */}
-        <div className="table-selector">
-          <label>
-            <input
-              type="radio"
-              value="Customers"
-              checked={currentTable === 'Customers'}
-              onChange={() => {
-                setCurrentPage(1);
-                initializeView('Customers');
-              }
-              }
-            />
-            Customers
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              value="Products"
-              checked={currentTable === 'Products'}
-              onChange={() => {setCurrentPage(1); initializeView('Products');}}
-            />
-            Products
-          </label>
-
-          
-          <label>
-            <input
-              type="radio"
-              value="Orders"
-              checked={currentTable === 'Orders'}
-                
-              onChange={() => { setCurrentPage(1); initializeView('Orders');}}
-            />
-            Order Items
-          </label>
-        </div>
+        <Selector        
+          currentTable={currentTable}
+          setCurrentPage={setCurrentPage}
+          initializeView={initializeView}
+        />
 
         {/* Action buttons */}
         <div className="actions">
@@ -158,85 +122,26 @@ function App() {
           goLast={goLast}
         />
 
-      {currentTable === 'Customers' && (
-        <div className="table-container">
-          <table className="table-def">
-            <thead>
-              <tr>
-                <th className="cell-center">ID</th>
-                <th>Name</th>
-                <th>City</th>
-                <th>Country</th>
-              </tr>
-            </thead>
-            <tbody>
-              {              
-              paginatedCustomers.map(c => (
-                <tr className={ c.id % 2 != 0 ? "odd-row": ""}  key={c.id}>
-                  <td className="cell-center" style={{ width: `${columnWidthsCustomers[0]}ch` }}>{c.id}</td>
-                  <td style={{ width: `${columnWidthsCustomers[1]}ch` }}>{c.name}</td>
-                  <td style={{ width: `${columnWidthsCustomers[2]}ch` }}>{c.city}</td>
-                  <td style={{ width: `${columnWidthsCustomers[3]}ch` }}>{c.country}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {currentTable === 'Customers' && 
+        <Customers
+          paginatedCustomers = {paginatedCustomers}
+          columnWidthsCustomers={columnWidthsCustomers}
+        />
+      }
       
-      {currentTable === 'Products' && (
-        <div className="table-container">
-          <table className="table-def">
-            <thead>
-              <tr>
-                <th className="cell-center">ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Manufacturer</th>
-                <th className="cell-right">Price USD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedProducts.map(p => (
-                <tr key={p.id} className={p.id % 2 !== 0 ? "odd-row" : ""}>
-                  <td className="cell-center" style={{ width: `${columnWidthsProducts[0]}ch` }}>{p.id}</td>
-                  <td style={{ width: `${columnWidthsProducts[1]}ch` }}>{p.name}</td>
-                  <td style={{ width: `${columnWidthsProducts[2]}ch` }}>{p.description}</td>
-                  <td style={{ width: `${columnWidthsProducts[3]}ch` }}>{p.manufacturer}</td>
-                  <td className="cell-right" style={{ width: `${columnWidthsProducts[4]}ch` }}>{p.priceUSD}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {currentTable === 'Products' && 
+        <Products
+          paginatedProducts = {paginatedProducts}
+          columnWidthsProducts={columnWidthsProducts}
+        />
+      }
 
-
-       {currentTable === 'Orders' && (
-          <div className="table-container">
-            <table className="table-def">
-              <thead>
-                <tr>
-                  <th className="cell-center">Order ID</th>
-                  <th>Customer</th>
-                  <th className="cell-center">Product</th>
-                  <th className="cell-center">Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedOrders.map(oi => (
-                  <tr key={oi.id + oi.product} className={oi.id % 2 !== 0 ? "odd-row" : ""}>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[0]}ch` }}>{oi.id}</td>
-                    <td style={{ width: `${columnWidthsOrders[1]}ch` }}>{oi.customer}</td>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[2]}ch` }}>{oi.product}</td>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[3]}ch` }}>{oi.quantity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
+       {currentTable === 'Orders' && 
+        <OrderItems
+          paginatedOrders = {paginatedOrders}
+          columnWidthsOrders={columnWidthsOrders}
+        />
+       }
 
 
       </div>

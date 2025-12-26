@@ -1,6 +1,7 @@
 import type { Customer, Product, OrderItem } from './interfaces';
 
-export type TableType = "Customers" | "Products" | "Orders";
+import type { TableType } from "./interfaces";
+
 
 // Generic function to compute paginated data and column widths
 export const getTableView = (

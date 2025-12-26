@@ -26,3 +26,5 @@ export interface OrderItem{
   product: string,
   quantity: number
 }
+
+export type TableType = "Customers" | "Products" | "Orders";
