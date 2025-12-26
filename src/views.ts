@@ -1,4 +1,4 @@
-import type { Customer, Product, OrderItem } from './interfaces';
+import type { Customer, Product, OrderItem, OrderView } from './interfaces';
 
 import type { TableType } from "./interfaces";
 
@@ -43,10 +43,38 @@ export const getTableView = (
   }
   if( sorted ){
     data = sorted.slice((currentPage-1)*rowsPerPage, currentPage*rowsPerPage);
-    console.log( (currentPage-1)*rowsPerPage, currentPage*rowsPerPage, data.length );
+    //console.log( (currentPage-1)*rowsPerPage, currentPage*rowsPerPage, data.length );
     
     let first = (currentPage-1)*rowsPerPage;
-    while( currentPage > 1 && data.length < rowsPerPage )
+    while( currentPage > 1 && data.length < rowsPerPage && first > 0 )
+      data = sorted.slice(--first, currentPage*rowsPerPage);
+  }
+
+  return { paginatedData: data, columnWidths };
+};
+
+export const getMasterView = (
+  orders: OrderView[],
+  currentPage: number,
+  rowsPerPage: number
+) => {
+  let data: any[] = [];
+  let columnWidths: number[] = [];
+
+  const sorted  = [...orders].sort((a,b) => a.id - b.id);
+  columnWidths = [
+    Math.max(...orders.map(c => String(c.id).length), "ID".length ),
+    Math.max(...orders.map(c => c.customer.length), "Customer".length ),
+    Math.max(...orders.map(c => String(c.products).length), "Products".length ),
+    Math.max(...orders.map(c => c.amountUSD.length), "Amount USD  ".length ),
+  ];
+
+  if( sorted ){
+    data = sorted.slice((currentPage-1)*rowsPerPage, currentPage*rowsPerPage);
+    //console.log( (currentPage-1)*rowsPerPage, currentPage*rowsPerPage, data.length );
+    
+    let first = (currentPage-1)*rowsPerPage;
+    while( currentPage > 1 && data.length < rowsPerPage && first > 0)
       data = sorted.slice(--first, currentPage*rowsPerPage);
   }
 

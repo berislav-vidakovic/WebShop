@@ -5,7 +5,7 @@ import type { Customer, OrderView, Product, OrderItem } from './interfaces'
 import './style.css'
 import { useOrdersSubscription } from './graphQL/subscriptions';
 import { Pagination  } from './Pagination'
-import { getTableView } from './views';
+import { getTableView, getMasterView } from './views';
 import type { TableType } from './interfaces';
 import { Customers } from './tables/Customers'
 import { Products } from './tables/Products'
@@ -22,6 +22,9 @@ function App() {
   const [totalPages, setTotalPages] = useState<number>(0); 
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const [totalPagesMaster, setTotalPagesMaster] = useState<number>(0); 
+  const [currentPageMaster, setCurrentPageMaster] = useState<number>(1);
+
   const [paginatedCustomers, setPaginatedCustomers] = useState<Customer[]>([]);
   const [columnWidthsCustomers, setColumnWidthsCustomers] = useState<number[]>([]);
 
@@ -30,6 +33,9 @@ function App() {
 
   const [paginatedOrders, setPaginatedOrders] = useState<OrderItem[]>([]);
   const [columnWidthsOrders, setColumnWidthsOrders] = useState<number[]>([]);
+
+  const [paginatedMaster, setPaginatedMaster] = useState<OrderView[]>([]);
+  const [columnWidthsMaster, setColumnWidthsMaster] = useState<number[]>([]);
   
   const rowsPerPage = 5;
 
@@ -48,10 +54,19 @@ function App() {
     initializeView(currentTable);
   }, [currentTable, currentPage, customers, products, orderItems]);
 
+  useEffect(() => {
+    initializeViewMaster();
+  }, [ordersMaster, currentPageMaster]);
+
   const goFirst = () => setCurrentPage(1);
   const goPrev = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const goNext = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const goLast = () => setCurrentPage(totalPages);
+
+  const goFirstMaster = () => setCurrentPageMaster(1);
+  const goPrevMaster = () => setCurrentPageMaster(prev => Math.max(prev - 1, 1));
+  const goNextMaster = () => setCurrentPageMaster(prev => Math.min(prev + 1, totalPagesMaster));
+  const goLastMaster = () => setCurrentPageMaster(totalPagesMaster);
 
 
   const setPageCount = ( table: TableType) =>{
@@ -62,6 +77,21 @@ function App() {
       len = orderItems.length;
 
     setTotalPages(Math.ceil(len / rowsPerPage));
+  }
+
+  const initializeViewMaster = () => {
+    const len = ordersMaster.length;
+    const pages = Math.ceil(len / rowsPerPage);
+    setTotalPagesMaster(pages);
+
+    // compute paginated data
+    const page = Math.min(currentPageMaster, pages === 0 ? 1 : pages);
+    const { paginatedData, columnWidths } = getMasterView(
+      ordersMaster, page, rowsPerPage
+    );
+
+    setPaginatedMaster(paginatedData);
+    setColumnWidthsMaster(columnWidths);
   }
 
   const initializeView = (table: TableType) => {
@@ -126,25 +156,23 @@ function App() {
         <Customers
           paginatedCustomers = {paginatedCustomers}
           columnWidthsCustomers={columnWidthsCustomers}
-        />
-      }
+        />}
       
       {currentTable === 'Products' && 
         <Products
           paginatedProducts = {paginatedProducts}
           columnWidthsProducts={columnWidthsProducts}
-        />
-      }
+        />}
 
-       {currentTable === 'Orders' && 
+      {currentTable === 'Orders' && 
         <OrderItems
           paginatedOrders = {paginatedOrders}
           columnWidthsOrders={columnWidthsOrders}
-        />
-       }
+        />}
 
 
       </div>
+
       <div>
         <h2>Total Orders USD: {ordersMaster
                         .map(o => Number(o.amountUSD.replace(/,/g, '')))
@@ -158,9 +186,21 @@ function App() {
           Last update: Monday, December the 22nd 2025
         </label>
       </div>
+      
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPageMaster}
+          totalPages={totalPagesMaster}
+          goFirst={goFirstMaster}
+          goPrev={goPrevMaster}
+          goNext={goNextMaster}
+          goLast={goLastMaster}
+        />
 
       {/* Order overview table */}
       <div className="table-container master">
+       
+      
         <table className="table-def">
           <thead>
             <tr>
@@ -171,12 +211,12 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {ordersMaster.map(o => (
+            {paginatedMaster.map(o => (
               <tr key={o.id} className={o.id % 2 !== 0 ? "odd-row-master" : ""}>
-                <td className="cell-center">{o.id}</td>
-                <td>{o.customer}</td>
-                <td className="cell-center">{o.products}</td>
-                <td className="cell-right">{o.amountUSD}</td>
+                <td className="cell-center" style={{ width: `${columnWidthsMaster[0]}ch` }}>{o.id}</td>
+                <td style={{ width: `${columnWidthsMaster[1]}ch` }}>{o.customer}</td>
+                <td className="cell-center" style={{ width: `${columnWidthsMaster[2]}ch` }}>{o.products}</td>
+                <td className="cell-right" style={{ width: `${columnWidthsMaster[3]}ch` }}>{o.amountUSD}</td>
               </tr>
             ))}
           </tbody>

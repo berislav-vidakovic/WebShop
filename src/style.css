@@ -89,6 +89,8 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 8px;
+  width: 420px;  
+  margin: 12px auto;
 }
 
 .pagination-left,
