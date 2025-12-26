@@ -81,72 +81,92 @@ function App() {
           <button>Delete</button>
         </div>
 
-        {/* Grid */}
-        {currentTable === 'Customers' && (
-          <div className="grid-container">
-          <div className="grid"
-               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
-          >
-            <div className="grid-header cell-center">ID</div>
-            <div className="grid-header">Name</div>
-            <div className="grid-header">City</div>
-            <div className="grid-header">Country</div>
+        {/* Pagination */}
+        <div>
+          <a href="#">First</a> &nbsp;
+          <a href="#">Previous</a> &nbsp;
+          <a href="#">Next</a> &nbsp;
+          <a href="#">Last</a>
+        </div>
 
-            {customers.map(c => (
-              <div className="grid-row" key={c.id}>
-                <div className="cell-center">{c.id}</div>
-                <div>{c.name}</div>
-                <div>{c.city}</div>
-                <div>{c.country}</div>
-              </div>
-            ))}
-          </div>  
-          </div>      
-        )}
+      {currentTable === 'Customers' && (
+        <div className="table-container">
+          <table className="table-def">
+            <thead>
+              <tr>
+                <th className="cell-center">ID</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Country</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customers.sort((a,b)=>a.id-b.id).map(c => (
+                <tr className={ c.id % 2 != 0 ? "odd-row": ""}  key={c.id}>
+                  <td className="cell-center">{c.id}</td>
+                  <td>{c.name}</td>
+                  <td>{c.city}</td>
+                  <td>{c.country}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      
+      {currentTable === 'Products' && (
+        <div className="table-container">
+          <table className="table-def">
+            <thead>
+              <tr>
+                <th className="cell-center">ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Manufacturer</th>
+                <th className="cell-right">Price USD</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(p => (
+                <tr key={p.id} className={p.id % 2 !== 0 ? "odd-row" : ""}>
+                  <td className="cell-center">{p.id}</td>
+                  <td>{p.name}</td>
+                  <td>{p.description}</td>
+                  <td>{p.manufacturer}</td>
+                  <td className="cell-right">{p.priceUSD}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        {currentTable === 'Products' && (
-          <div className="grid"
-               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
-          >
-            <div className="grid-header cell-center">ID</div>
-            <div className="grid-header">Name</div>
-            <div className="grid-header">Description</div>
-            <div className="grid-header">Manufacturer</div>
-            <div className="grid-header cell-right">Price USD</div>
 
-            {products.map(p => (
-              <div className="grid-row" key={p.id}>
-                <div className="cell-center">{p.id}</div>
-                <div>{p.name}</div>
-                <div>{p.description}</div>
-                <div>{p.manufacturer}</div>
-                <div className="cell-right">{p.priceUSD}</div>
-              </div>
-            ))}
-          </div>        
-        )}
+       {currentTable === 'Orders' && (
+  <div className="table-container">
+    <table className="table-def">
+      <thead>
+        <tr>
+          <th className="cell-center">Order ID</th>
+          <th>Customer</th>
+          <th className="cell-center">Product</th>
+          <th className="cell-center">Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {orderItems.map(oi => (
+          <tr key={oi.id + oi.product} className={oi.id % 2 !== 0 ? "odd-row" : ""}>
+            <td className="cell-center">{oi.id}</td>
+            <td>{oi.customer}</td>
+            <td className="cell-center">{oi.product}</td>
+            <td className="cell-center">{oi.quantity}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
-        {currentTable === 'Orders' && (
-          <div className="grid-container">
-          <div className="grid"
-               style={{ gridTemplateColumns: currentColumns()!.join(' ') }}
-          >
-            <div className="grid-header cell-center">Order ID</div>
-            <div className="grid-header">Customer</div>
-            <div className="grid-header">Product</div>
-            <div className="grid-header cell-center">Quantity</div>
-
-            {orderItems.map(oi => (
-              <div className="grid-row" key={oi.id + oi.product}>
-                <div className="cell-center">{oi.id}</div>
-                <div>{oi.customer}</div>
-                <div>{oi.product}</div>
-                <div className="cell-center">{oi.quantity}</div>
-              </div>
-            ))}
-          </div>  
-          </div>      
-        )}
 
 
       </div>
@@ -162,31 +182,32 @@ function App() {
         <label>
           Last update: Monday, December the 22nd 2025
         </label>
-
-        {/* Order overview table */}
-        <div className="grid-container">
-          <div className="grid grid-order">
-            <div className="grid-header cell-center">ID</div>
-            <div className="grid-header">Customer</div>
-            <div className="grid-header cell-center">Products</div>
-            <div className="grid-header cell-right">Amount USD</div>
-
-            {ordersMaster.map(o => (
-              <div 
-                className= "grid-row"
-                key={o.id}
-              >
-                <div className="cell-center">{o.id}</div>
-                <div>{o.customer}</div>
-                <div className="cell-center">{o.products}</div>
-                <div className="cell-right">{o.amountUSD}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        
       </div>
+
+      {/* Order overview table */}
+<div className="table-container">
+  <table className="table-def">
+    <thead>
+      <tr>
+        <th className="cell-center">ID</th>
+        <th>Customer</th>
+        <th className="cell-center">Products</th>
+        <th className="cell-right">Amount USD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {ordersMaster.map(o => (
+        <tr key={o.id} className={o.id % 2 !== 0 ? "odd-row" : ""}>
+          <td className="cell-center">{o.id}</td>
+          <td>{o.customer}</td>
+          <td className="cell-center">{o.products}</td>
+          <td className="cell-right">{o.amountUSD}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   )
 }

@@ -19,71 +19,58 @@
   margin-right: 8px;
 }
 
-.grid {
-  display: grid;
-  /*grid-template-columns: 80px 1fr 1fr 1fr; 
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); */
-  border: #333 solid 1px;
-  border-radius: 4px;
-  padding: 8px;
+/* -------------------------------------TABLE design ----------------s*/
+/* table alignment - center */
+.table-container {
+  display: inline-flex;
+  justify-content: center;
   background-color: #ffc;
+  padding: 12px;
+  border: #999 1px solid;
+  border-radius: 8px;
 }
 
-.grid-header {
-  font-weight:600;
-  background-color: #009;
-  color: #ff0;
+/* column width adjusted to content */
+.table-def {
+  table-layout: auto;
+  width: auto;
 }
 
-.grid-row {
-  display: contents;
+/* cell alignment - default left */
+.table-def th,
+.table-def td {
+  text-align: left;
 }
 
-.grid-row div {
-  padding: 2px 2px;
-  line-height: 1;   /* compact text */
-  border-bottom: 1px solid #aaa;
-}
-
-.grid-header,
-.grid-row div {
-  border-right: 1px solid #ccc; /* vertical lines */
-  text-align: left;   /* left-align content */
-  padding: 2px 8px;   
-}
-
-/* remove right border for last column */
-.grid-header:last-child,
-.grid-row div:last-child {
-  border-right: none;
-}
-
-/* Order overview grid — independent layout */
-.grid-order {
-  grid-template-columns: 
-    80px     /* ID */
-    1.5fr    /* Customer */
-    1fr      /* Products */
-    1fr;     /* Amount USD */
-  background-color: #cfc;
-  width: max-content;
-}
-
-
-.grid-container {
-  display: flex;
-  justify-content: center; /* center horizontally */
-  margin: 16px 0;          /* optional spacing */
-}
-
-.cell-center, 
-.grid-row .cell-center
+.table-def .cell-center
  {
   text-align: center;
 }
 
-.cell-right,
-.grid-row .cell-right
+.table-def .cell-right
 {
   text-align: right;
+}
+
+/* common content and header style */
+.table-def {
+  border-collapse: collapse;
+}
+
+/* header style */
+.table-def th {
+  background-color: #006;
+  color: #ff8;
+  padding: 2px 8px;
+  border: 1px solid #777;   
+}
+
+/* content style */
+.table-def td {
+  padding: 0px 8px;
+  border: 1px solid #777;
+}
+
+.odd-row {
+  background-color: #efe;
 }
