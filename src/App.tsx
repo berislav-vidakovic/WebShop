@@ -11,6 +11,7 @@ import { Customers } from './tables/Customers'
 import { Products } from './tables/Products'
 import { OrderItems } from './tables/Orders'
 import { Selector } from './tables/Selector'
+import { Master } from './tables/Master'
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -140,6 +141,9 @@ function App() {
           <button>Add</button>
           <button>Update</button>
           <button>Delete</button>
+          <button>Filter</button>
+          <button>Sort</button>
+
         </div>
 
         {/* Pagination */}
@@ -187,41 +191,21 @@ function App() {
         </label>
       </div>
       
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPageMaster}
-          totalPages={totalPagesMaster}
-          goFirst={goFirstMaster}
-          goPrev={goPrevMaster}
-          goNext={goNextMaster}
-          goLast={goLastMaster}
-        />
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPageMaster}
+        totalPages={totalPagesMaster}
+        goFirst={goFirstMaster}
+        goPrev={goPrevMaster}
+        goNext={goNextMaster}
+        goLast={goLastMaster}
+      />
 
       {/* Order overview table */}
-      <div className="table-container master">
-       
-      
-        <table className="table-def">
-          <thead>
-            <tr>
-              <th className="cell-center">ID</th>
-              <th>Customer</th>
-              <th className="cell-center">Products</th>
-              <th className="cell-right">Amount USD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedMaster.map(o => (
-              <tr key={o.id} className={o.id % 2 !== 0 ? "odd-row-master" : ""}>
-                <td className="cell-center" style={{ width: `${columnWidthsMaster[0]}ch` }}>{o.id}</td>
-                <td style={{ width: `${columnWidthsMaster[1]}ch` }}>{o.customer}</td>
-                <td className="cell-center" style={{ width: `${columnWidthsMaster[2]}ch` }}>{o.products}</td>
-                <td className="cell-right" style={{ width: `${columnWidthsMaster[3]}ch` }}>{o.amountUSD}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Master
+        paginatedMaster={paginatedMaster}
+        columnWidthsMaster={columnWidthsMaster}
+      />
 
     </div>
   )
