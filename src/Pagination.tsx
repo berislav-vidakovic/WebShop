@@ -1,4 +1,3 @@
-
 export const Pagination = ({
   currentPage,
   totalPages,
