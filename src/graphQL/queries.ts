@@ -49,8 +49,6 @@ export const fetchOrderItems = async (): Promise<OrderItem[]> => {
     }));
 
     return data;
-
-
   } 
   catch (error) {
     console.error("Error fetching GraphQL:", error);
@@ -96,7 +94,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
 }
 
 //generic function
-async function sendGraphQLquery(body: string){
+export async function sendGraphQLquery(body: string){
   const res = await fetch( hasuraURL, {
     method: "POST",
     headers: {

@@ -13,6 +13,7 @@ import { OrderItems } from './tables/Orders'
 import { Selector } from './tables/Selector'
 import { Master } from './tables/Master'
 import { PlaceOrderDialog } from './dialogs/PlaceOrder'
+import { placeNewOrderMutation } from './graphQL/mutations'
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -150,6 +151,7 @@ function App() {
             onCancel={() => setShowCreateDialog(false)}
             onComplete={(customerId, items) => {
               console.log("ORDER DRAFT", customerId, items);
+              placeNewOrderMutation(customerId, items);
               setShowCreateDialog(false);
             }}
           />
@@ -157,7 +159,10 @@ function App() {
 
         {/* Action buttons */}
         <div className="actions">
-          <button onClick={() => setShowCreateDialog(true)}>
+          <button onClick={() => {
+              if(currentTable === 'Orders') setShowCreateDialog(true);
+            }
+          }>
             Create
           </button>
           <button>Update</button>
