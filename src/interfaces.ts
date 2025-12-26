@@ -28,3 +28,10 @@ export interface OrderItem{
 }
 
 export type TableType = "Customers" | "Products" | "Orders";
+
+export interface OrderDraftItem {
+  productId: number;
+  productName: string;
+  priceUSD: number;
+  quantity: number;
+};

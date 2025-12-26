@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { fetchCustomers,  fetchProducts, fetchOrderItems } from './graphQL/queries'
-import type { Customer, OrderView, Product, OrderItem } from './interfaces'
+import type { Customer, OrderView, Product, OrderItem, OrderDraftItem } from './interfaces'
 import './style.css'
 import { useOrdersSubscription } from './graphQL/subscriptions';
 import { Pagination  } from './Pagination'
@@ -12,6 +12,7 @@ import { Products } from './tables/Products'
 import { OrderItems } from './tables/Orders'
 import { Selector } from './tables/Selector'
 import { Master } from './tables/Master'
+import { PlaceOrderDialog } from './dialogs/PlaceOrder'
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -37,6 +38,12 @@ function App() {
 
   const [paginatedMaster, setPaginatedMaster] = useState<OrderView[]>([]);
   const [columnWidthsMaster, setColumnWidthsMaster] = useState<number[]>([]);
+
+  // Place order-related states
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [draftItems, setDraftItems] = useState<OrderDraftItem[]>([]);
   
   const rowsPerPage = 5;
 
@@ -136,11 +143,25 @@ function App() {
           initializeView={initializeView}
         />
 
+        {showCreateDialog && (
+          <PlaceOrderDialog
+            customers={customers}
+            products={products}
+            onCancel={() => setShowCreateDialog(false)}
+            onComplete={(customerId, items) => {
+              console.log("ORDER DRAFT", customerId, items);
+              setShowCreateDialog(false);
+            }}
+          />
+        )}
+
         {/* Action buttons */}
         <div className="actions">
-          <button>Add</button>
+          <button onClick={() => setShowCreateDialog(true)}>
+            Create
+          </button>
           <button>Update</button>
-          <button>Delete</button>
+          {currentTable === 'Orders' && <button>Delete</button>}
           <button>Filter</button>
           <button>Sort</button>
 
