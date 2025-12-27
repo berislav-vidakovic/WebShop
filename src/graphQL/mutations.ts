@@ -47,6 +47,58 @@ export async function placeNewOrderMutation(customerId: number, items: OrderDraf
   }
 }
 
-export async function updateOrderMutation(customerId: number, items: OrderDraftItem[]){
-  
+export async function updateOrderMutation( orderId: number, customerId: number, items: OrderDraftItem[]){
+    if( !items.length ) return;
+    const mutation = `
+    mutation UpdateOrder(
+      $orderId: Int!
+      $customerId: Int!
+      $orderItems: [order_items_insert_input!]!
+    ) {
+      update_orders_by_pk(
+        pk_columns: { id: $orderId }
+        _set: { customer_id: $customerId }
+      ) {
+        id
+      }
+
+      delete_order_items(
+        where: { order_id: { _eq: $orderId } }
+      ) {
+        affected_rows
+      }
+
+      insert_order_items(
+        objects: $orderItems
+      ) {
+        affected_rows
+      }
+    }
+  `;
+
+  const orderItemsInput = items.map(item => ({
+    order_id: orderId,
+    product_id: item.productId,
+    quantity: item.quantity
+  }));
+
+  const body = JSON.stringify({
+    query: mutation,
+    variables: {
+      orderId,
+      customerId,
+      orderItems: orderItemsInput
+    }
+  });
+
+  try {
+    const result = await sendGraphQLquery(body);
+    console.log("Order updated:", result);
+    return result;
+  } 
+  catch (error) {
+    console.error("Error executing  GraphQL update mutation:", error);
+    return [];
+  }
+
 }

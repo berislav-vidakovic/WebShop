@@ -45,7 +45,7 @@ function App() {
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
 
   // Edit order - related states
-  const [selectedOrderId, setSelectedOrderId] = useState<number>(1);
+  const [selectedOrderId, setSelectedOrderId] = useState<number>(2);
 
   
   const rowsPerPage = 5;
@@ -192,12 +192,11 @@ function App() {
             onCancel={() => setShowEditDialog(false)}
             onComplete={(customerId, items) => {
               console.log("ORDER DRAFT", customerId, items);
-              updateOrderMutation(customerId, items);
+              updateOrderMutation(selectedOrderId, customerId, items);
               setShowEditDialog(false);
             }}
             initialCustomerId={getSelectedCustomerId()}
             initialItems={getOrderDrafts()}
-
           />
         )}
 
