@@ -22,8 +22,8 @@ export const OrderItems = ({
               </thead>
               <tbody>
                 {paginatedOrders.map(oi => (
-                  <tr key={oi.id + oi.product} className={oi.id % 2 !== 0 ? "odd-row" : ""}>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[0]}ch` }}>{oi.id}</td>
+                  <tr key={oi.orderId + oi.product} className={oi.orderId % 2 !== 0 ? "odd-row" : ""}>
+                    <td className="cell-center" style={{ width: `${columnWidthsOrders[0]}ch` }}>{oi.orderId}</td>
                     <td style={{ width: `${columnWidthsOrders[1]}ch` }}>{oi.customer}</td>
                     <td className="cell-center" style={{ width: `${columnWidthsOrders[2]}ch` }}>{oi.product}</td>
                     <td className="cell-center" style={{ width: `${columnWidthsOrders[3]}ch` }}>{oi.quantity}</td>

@@ -20,9 +20,9 @@ export const PlaceOrderDialog = ({
   initialCustomerId?: number;
   initialItems?: OrderDraftItem[];
 }) => {
-  const [customerId, setCustomerId] = useState<number | null>(null);
+  const [customerId, setCustomerId] = useState<number | null>(initialCustomerId ?? null);
   const [productId, setProductId] = useState<number | null>(null);
-  const [items, setItems] = useState<OrderDraftItem[]>([]);
+  const [items, setItems] = useState<OrderDraftItem[]>(initialItems as OrderDraftItem[] ?? []);
 
   const addItem = () => {
     if (!productId) return;

@@ -43,10 +43,9 @@ function App() {
   // Place order-related states
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  
-  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [draftItems, setDraftItems] = useState<OrderDraftItem[]>([]);
+
+  // Edit order - related states
+
   
   const rowsPerPage = 5;
 
@@ -136,8 +135,9 @@ function App() {
  return (
     <div className="app">
       <div>
-        <h2>{currentTable}</h2>
+        <h1>IT equipment WebShop</h1>
         <hr />
+        <h2>{currentTable}</h2>
 
         {/* Radio buttons */}
         <Selector        

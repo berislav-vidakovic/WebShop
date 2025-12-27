@@ -33,9 +33,9 @@ export const getTableView = (
       Math.max(...products.map(p => String(p.priceUSD).length), "Price USD".length ),
     ];
   } else if (table === "Orders") {
-    sorted = [...orderItems].sort((a,b) => a.id - b.id);
+    sorted = [...orderItems].sort((a,b) => a.orderId - b.orderId);
     columnWidths = [
-      Math.max(...orderItems.map(o => String(o.id).length), "Order ID".length ),
+      Math.max(...orderItems.map(o => String(o.orderId).length), "Order ID".length ),
       Math.max(...orderItems.map(o => o.customer.length), "Customer".length ),
       Math.max(...orderItems.map(o => o.product.length), "Product".length ),
       Math.max(...orderItems.map(o => String(o.quantity).length), "Quantity".length ),

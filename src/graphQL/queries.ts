@@ -44,7 +44,7 @@ export const fetchOrderItems = async (): Promise<OrderItem[]> => {
 
 
     const data: OrderItem[] = json.data.order_details_v.map((od: any) => ({
-      id: od.order_id,
+      orderId: od.order_id,
       customer: od.customer,
       product: od.product,
       quantity: od.quantity,
