@@ -41,6 +41,7 @@ export const getTableView = (
       Math.max(...orderItems.map(o => String(o.quantity).length), "Quantity".length ),
       Math.max(...orderItems.map(o => String(o.price).length), "Price USD".length ),
       Math.max(...orderItems.map(o => String(o.subtotal).length), "Subtotal USD".length ),
+      "View Edit Delete".length * 1.3
     ];
   }
   if( sorted ){

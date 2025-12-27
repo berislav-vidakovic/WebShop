@@ -1,11 +1,18 @@
+import type { Dispatch, SetStateAction } from "react";
 import type { OrderItem } from "../interfaces";
 
 export const OrderItems = ({
   paginatedOrders,
-  columnWidthsOrders
+  columnWidthsOrders,
+  setShowEditDialog,
+  setSelectedOrderId
+
 }: {
   paginatedOrders: OrderItem[];
   columnWidthsOrders: number[];
+  setShowEditDialog: Dispatch<SetStateAction<boolean>>;
+  setSelectedOrderId: Dispatch<SetStateAction<number>>;
+  
 }) => {
   return (
         <div className="table-container">
@@ -18,6 +25,7 @@ export const OrderItems = ({
                   <th className="cell-center">Quantity</th>
                   <th className="cell-right">Price $</th>
                   <th className="cell-right">SubTotal $</th>
+                  <th className="cell-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -29,6 +37,20 @@ export const OrderItems = ({
                     <td className="cell-center" style={{ width: `${columnWidthsOrders[3]}ch` }}>{oi.quantity}</td>
                     <td className="cell-right" style={{ width: `${columnWidthsOrders[4]}ch` }}>{oi.price}</td>
                     <td className="cell-right" style={{ width: `${columnWidthsOrders[5]}ch` }}>{oi.subtotal}</td>
+                    <td className="cell-center" style={{ width: `${columnWidthsOrders[6]}ch` }}>
+                      <button 
+                        className="action-button">View</button>
+                      <button 
+                        className="action-button"
+                        onClick= {
+                          ()=>{
+                            setSelectedOrderId(oi.orderId);
+                            setShowEditDialog(true);
+                          }
+                        }
+                      >Edit</button>
+                      <button className="action-button">Delete</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

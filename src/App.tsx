@@ -208,14 +208,9 @@ function App() {
           }>
             Create
           </button>
-          <button
-            onClick= {
-              ()=>{
-                setShowEditDialog(true);
-              }
-            }
-          >Edit</button>
-          {currentTable === 'Orders' && <button>Delete</button>}
+
+
+     
           <button>Filter</button>
           <button>Sort</button>
 
@@ -247,6 +242,8 @@ function App() {
         <OrderItems
           paginatedOrders = {paginatedOrders}
           columnWidthsOrders={columnWidthsOrders}
+          setShowEditDialog={setShowEditDialog}
+          setSelectedOrderId={setSelectedOrderId}
         />}
 
 
