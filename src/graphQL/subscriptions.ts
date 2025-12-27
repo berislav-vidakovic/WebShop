@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { OrderView } from '../interfaces'
 import { createClient } from 'graphql-ws';
+import { numToString } from '../utils';
 
 /*
 PostgreSQL view definition:
@@ -87,10 +88,7 @@ export function useOrdersSubscription(
             id: o.id,
             customer: o.customer.name,
             products: totalProducts,
-            amountUSD: totalAmount.toLocaleString('en-US', { 
-              minimumFractionDigits: 2, 
-              maximumFractionDigits: 2 
-            })
+            amountUSD: numToString(totalAmount)
           };
         });
         

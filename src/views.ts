@@ -39,6 +39,8 @@ export const getTableView = (
       Math.max(...orderItems.map(o => o.customer.length), "Customer".length ),
       Math.max(...orderItems.map(o => o.product.length), "Product".length ),
       Math.max(...orderItems.map(o => String(o.quantity).length), "Quantity".length ),
+      Math.max(...orderItems.map(o => String(o.price).length), "Price USD".length ),
+      Math.max(...orderItems.map(o => String(o.subtotal).length), "Subtotal USD".length ),
     ];
   }
   if( sorted ){

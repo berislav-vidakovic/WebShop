@@ -24,7 +24,9 @@ export interface OrderItem{
   id: number,
   customer: string,
   product: string,
-  quantity: number
+  quantity: number,
+  price: string,
+  subtotal: string
 }
 
 export type TableType = "Customers" | "Products" | "Orders";

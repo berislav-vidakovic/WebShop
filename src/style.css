@@ -1,3 +1,33 @@
+/* Root settings */
+:root { /* color scheme */
+  /*--color1: #ffbac8;
+  --color2: #fff1ba;
+  --color3: #bafff1;
+  --color4: #bac8ff;*/
+  --color3: #ffedfa;
+  --color1: #fff2ed;
+  --color2: #edfff2;
+  --color4: #edfaff;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;  
+  background-color: var(--color3);
+}
+
+
+body {
+  background-color: var(--color4);
+}
+
+
+/*    App settings */
 .app {
   padding: 20px;
   font-family: sans-serif;
@@ -37,14 +67,14 @@
 .table-container {
   display: inline-flex;
   justify-content: center;
-  background-color: #ffd;
+  background-color: var(--color2);
   padding: 12px;
   border: #999 1px solid;
   border-radius: 8px;
 }
 
 .master {
-  background-color: #efe;
+  background-color: var(--color1);
 }
 
 /* column width adjusted to content */
@@ -76,8 +106,8 @@
 
 /* header style */
 .table-def th {
-  background-color: #006;
-  color: #ff8;
+  background-color: #000;
+  color: #fff;
   padding: 2px 8px;
   border: 1px solid #777;   
 }
@@ -89,11 +119,11 @@
 }
 
 .odd-row {
-  background-color: #efe;
+  background-color: var(--color1);
 }
 
 .odd-row-master{
-  background-color: #ffd;
+  background-color: var(--color2);
 }
 
 /* -------------------- Pagination ----------------*/

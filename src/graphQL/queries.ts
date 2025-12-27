@@ -1,4 +1,5 @@
 import type { Customer, Product, OrderItem } from '../interfaces'
+import { numToString } from '../utils';
 
 const hasuraURL = "https://hasura.barryonweb.com/v1/graphql";
 
@@ -35,6 +36,7 @@ export const fetchOrderItems = async (): Promise<OrderItem[]> => {
               customer
               product
               quantity
+              price_usd
             }
           }
         `});
@@ -45,7 +47,9 @@ export const fetchOrderItems = async (): Promise<OrderItem[]> => {
       id: od.order_id,
       customer: od.customer,
       product: od.product,
-      quantity: od.quantity
+      quantity: od.quantity,
+      price: numToString(od.price_usd),
+      subtotal: numToString(od.price_usd*od.quantity)
     }));
 
     return data;
@@ -79,10 +83,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
       name: p.name,
       description: p.description,
       manufacturer: p.manufacturer,
-      priceUSD: p.price_usd.toLocaleString('en-US', { 
-              minimumFractionDigits: 2, 
-              maximumFractionDigits: 2 
-            })
+      priceUSD: numToString(p.price_usd)
     }));
 
     return data;

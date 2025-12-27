@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Customer, Product, OrderDraftItem} from "../interfaces";
+import { numToString, strToNum } from "../utils";
 
 
 export const PlaceOrderDialog = ({
@@ -43,7 +44,7 @@ export const PlaceOrderDialog = ({
         {
           productId: product.id,
           productName: product.name,
-          priceUSD: Number(product.priceUSD.replace(/,/g, '')),
+          priceUSD: strToNum(product.priceUSD),
           quantity: 1
         }
       ]);
@@ -123,7 +124,7 @@ export const PlaceOrderDialog = ({
             />
 
             <span className="item-subtotal">
-              ${(it.quantity * it.priceUSD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${numToString(it.quantity * it.priceUSD)}
             </span>
 
             <button className="icon" onClick={() => removeItem(i)}>✕</button>
@@ -135,7 +136,7 @@ export const PlaceOrderDialog = ({
     {/* Total */}
     <div className="total">
       Amount Total 
-      <span>${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }</span>
+      <span>${numToString(total) }</span>
     </div>
 
     {/* Actions */}
