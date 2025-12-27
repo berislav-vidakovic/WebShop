@@ -11,7 +11,7 @@ import { Products } from './tables/Products'
 import { OrderItems } from './tables/Orders'
 import { Selector } from './tables/Selector'
 import { Master } from './tables/Master'
-import { PlaceOrderDialog } from './dialogs/PlaceOrder'
+import { OrderDialog } from './dialogs/OrderDialog'
 import { placeNewOrderMutation, updateOrderMutation } from './graphQL/mutations'
 import { numToString, strToNum } from './utils';
 
@@ -41,10 +41,11 @@ function App() {
   const [columnWidthsMaster, setColumnWidthsMaster] = useState<number[]>([]);
 
   // Place order-related states
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
+  const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
 
   // Edit order - related states
+  const [selectedOrderId, setSelectedOrderId] = useState<number>(1);
 
   
   const rowsPerPage = 5;
@@ -132,7 +133,28 @@ function App() {
     }
   }
 
- return (
+  const getOrderDrafts = () => {
+    const selectedItems = orderItems.filter(i=>i.orderId === selectedOrderId );
+    if( !selectedItems.length ) return [];
+    const orderDraftItems = selectedItems.map(item=>({
+      productId: products.find(p=>p.name == item.product)?.id,
+      productName: item.product,
+      priceUSD: strToNum(item.price),
+      quantity: item.quantity
+    }));
+    return orderDraftItems as OrderDraftItem[];
+  }
+
+  const getSelectedCustomerId = () => {
+    const selectedItems = orderItems.filter(i=>i.orderId === selectedOrderId );
+    if( !selectedItems.length ) return null;
+    const customer = customers.find(c=>c.name = selectedItems[0].customer);
+    if( customer )
+      return customer.id;
+    return null;
+  }
+
+  return (
     <div className="app">
       <div>
         <h1>IT equipment WebShop</h1>
@@ -147,7 +169,7 @@ function App() {
         />
 
         {showCreateDialog && (
-          <PlaceOrderDialog
+          <OrderDialog
             title="Place new Order"
             customers={customers}
             products={products}
@@ -157,11 +179,13 @@ function App() {
               placeNewOrderMutation(customerId, items);
               setShowCreateDialog(false);
             }}
+            initialCustomerId={null}
+            initialItems={null}
           />
         )}
 
          {showEditDialog && (
-          <PlaceOrderDialog
+          <OrderDialog
             title="Edit Order"
             customers={customers}
             products={products}
@@ -171,6 +195,9 @@ function App() {
               updateOrderMutation(customerId, items);
               setShowEditDialog(false);
             }}
+            initialCustomerId={getSelectedCustomerId()}
+            initialItems={getOrderDrafts()}
+
           />
         )}
 

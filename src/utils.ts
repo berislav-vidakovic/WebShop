@@ -10,7 +10,3 @@ export function numToString(n: number){
 export function strToNum(s: string) {
      return Number(s.replace(/,/g, ''));
 }
-
-export function mapOrderItems(items: OrderItem[]){
-  
-}

@@ -3,7 +3,7 @@ import type { Customer, Product, OrderDraftItem} from "../interfaces";
 import { numToString, strToNum } from "../utils";
 
 
-export const PlaceOrderDialog = ({
+export const OrderDialog = ({
   title,
   customers,
   products,
@@ -17,8 +17,8 @@ export const PlaceOrderDialog = ({
   products: Product[];
   onCancel: () => void;
   onComplete: (customerId: number, items: OrderDraftItem[]) => void;
-  initialCustomerId?: number;
-  initialItems?: OrderDraftItem[];
+  initialCustomerId: number | null;
+  initialItems: OrderDraftItem[] | null;
 }) => {
   const [customerId, setCustomerId] = useState<number | null>(initialCustomerId ?? null);
   const [productId, setProductId] = useState<number | null>(null);
@@ -146,7 +146,7 @@ export const PlaceOrderDialog = ({
         disabled={!customerId || items.length === 0}
         onClick={() => onComplete(customerId!, items)}
       >
-        Complete Order
+        Confirm
       </button>
     </div>
 

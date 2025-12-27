@@ -1,3 +1,6 @@
+export type TableType = "Customers" | "Products" | "Orders";
+
+
 export interface Customer{
   id: number,
   name: string,
@@ -28,8 +31,6 @@ export interface OrderItem{
   price: string,
   subtotal: string
 }
-
-export type TableType = "Customers" | "Products" | "Orders";
 
 export interface OrderDraftItem {
   productId: number;
