@@ -14,6 +14,8 @@ export const OrderItems = ({
   setSelectedOrderId: Dispatch<SetStateAction<number>>;
   
 }) => {
+  let lastOrderId: number | null = null;
+  let isOdd = false;
   return (
         <div className="table-container">
             <table className="table-def">
@@ -29,30 +31,40 @@ export const OrderItems = ({
                 </tr>
               </thead>
               <tbody>
-                {paginatedOrders.map(oi => (
-                  <tr key={oi.orderId + oi.product} className={oi.orderId % 2 !== 0 ? "odd-row" : ""}>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[0]}ch` }}>{oi.orderId}</td>
-                    <td style={{ width: `${columnWidthsOrders[1]}ch` }}>{oi.customer}</td>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[2]}ch` }}>{oi.product}</td>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[3]}ch` }}>{oi.quantity}</td>
-                    <td className="cell-right" style={{ width: `${columnWidthsOrders[4]}ch` }}>{oi.price}</td>
-                    <td className="cell-right" style={{ width: `${columnWidthsOrders[5]}ch` }}>{oi.subtotal}</td>
-                    <td className="cell-center" style={{ width: `${columnWidthsOrders[6]}ch` }}>
-                      <button 
-                        className="action-button">View</button>
-                      <button 
-                        className="action-button"
-                        onClick= {
-                          ()=>{
-                            setSelectedOrderId(oi.orderId);
-                            setShowEditDialog(true);
-                          }
-                        }
-                      >Edit</button>
-                      <button className="action-button">Delete</button>
-                    </td>
-                  </tr>
-                ))}
+                {
+                  paginatedOrders.map(oi => {
+
+                    if (oi.orderId !== lastOrderId) {
+                      isOdd = !isOdd;           // toggle color
+                      lastOrderId = oi.orderId; // remember new group
+                    }
+                    return (
+                      <tr key={oi.orderId + oi.product} className={isOdd ? "odd-row" : ""}>
+                        <td className="cell-center" style={{ width: `${columnWidthsOrders[0]}ch` }}>{oi.orderId}</td>
+                        <td style={{ width: `${columnWidthsOrders[1]}ch` }}>{oi.customer}</td>
+                        <td className="cell-center" style={{ width: `${columnWidthsOrders[2]}ch` }}>{oi.product}</td>
+                        <td className="cell-center" style={{ width: `${columnWidthsOrders[3]}ch` }}>{oi.quantity}</td>
+                        <td className="cell-right" style={{ width: `${columnWidthsOrders[4]}ch` }}>{oi.price}</td>
+                        <td className="cell-right" style={{ width: `${columnWidthsOrders[5]}ch` }}>{oi.subtotal}</td>
+                        <td className="cell-center" style={{ width: `${columnWidthsOrders[6]}ch` }}>
+                          <button 
+                            className="action-button">View</button>
+                          <button 
+                            className="action-button"
+                            onClick= {
+                              ()=>{
+                                setSelectedOrderId(oi.orderId);
+                                setShowEditDialog(true);
+                              }
+                            }
+                          >Edit</button>
+                          <button className="action-button">Delete</button>
+                        </td>
+                      </tr>
+                    )
+                  }
+                )
+                }
               </tbody>
             </table>
           </div>
