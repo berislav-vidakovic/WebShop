@@ -13,7 +13,7 @@ import { OrderItems } from './tables/Orders'
 import { Selector } from './tables/Selector'
 import { Master } from './tables/Master'
 import { PlaceOrderDialog } from './dialogs/PlaceOrder'
-import { placeNewOrderMutation } from './graphQL/mutations'
+import { placeNewOrderMutation, updateOrderMutation } from './graphQL/mutations'
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -42,6 +42,8 @@ function App() {
 
   // Place order-related states
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [draftItems, setDraftItems] = useState<OrderDraftItem[]>([]);
@@ -146,6 +148,7 @@ function App() {
 
         {showCreateDialog && (
           <PlaceOrderDialog
+            title="Place new Order"
             customers={customers}
             products={products}
             onCancel={() => setShowCreateDialog(false)}
@@ -153,6 +156,20 @@ function App() {
               console.log("ORDER DRAFT", customerId, items);
               placeNewOrderMutation(customerId, items);
               setShowCreateDialog(false);
+            }}
+          />
+        )}
+
+         {showEditDialog && (
+          <PlaceOrderDialog
+            title="Edit Order"
+            customers={customers}
+            products={products}
+            onCancel={() => setShowEditDialog(false)}
+            onComplete={(customerId, items) => {
+              console.log("ORDER DRAFT", customerId, items);
+              updateOrderMutation(customerId, items);
+              setShowEditDialog(false);
             }}
           />
         )}
@@ -165,7 +182,13 @@ function App() {
           }>
             Create
           </button>
-          <button>Update</button>
+          <button
+            onClick= {
+              ()=>{
+                setShowEditDialog(true);
+              }
+            }
+          >Edit</button>
           {currentTable === 'Orders' && <button>Delete</button>}
           <button>Filter</button>
           <button>Sort</button>

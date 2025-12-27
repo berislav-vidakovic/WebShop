@@ -3,15 +3,21 @@ import type { Customer, Product, OrderDraftItem} from "../interfaces";
 
 
 export const PlaceOrderDialog = ({
+  title,
   customers,
   products,
   onCancel,
-  onComplete
+  onComplete,
+  initialCustomerId,
+  initialItems
 }: {
+  title:string;
   customers: Customer[];
   products: Product[];
   onCancel: () => void;
   onComplete: (customerId: number, items: OrderDraftItem[]) => void;
+  initialCustomerId?: number;
+  initialItems?: OrderDraftItem[];
 }) => {
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [productId, setProductId] = useState<number | null>(null);
@@ -64,7 +70,7 @@ export const PlaceOrderDialog = ({
   <div className="modal-backdrop">
     <div className="modal">
 
-    <h3 className="modal-title">Place new Order</h3>
+    <h3 className="modal-title">{title}</h3>
 
     {/* Customer */}
     <div className="form-group">

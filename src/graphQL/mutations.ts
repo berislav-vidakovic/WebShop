@@ -21,7 +21,6 @@ export async function placeNewOrderMutation(customerId: number, items: OrderDraf
     }
   `;
 
-
   // Map items to GraphQL input format
   const orderItemsInput = items.map(item => ({
     product_id: item.productId,
@@ -46,4 +45,8 @@ export async function placeNewOrderMutation(customerId: number, items: OrderDraf
     console.error("Error executing  GraphQL mutation:", error);
     return [];
   }
+}
+
+export async function updateOrderMutation(customerId: number, items: OrderDraftItem[]){
+  
 }
