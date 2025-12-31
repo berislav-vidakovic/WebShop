@@ -1,4 +1,3 @@
-import type { OrderItem, OrderDraftItem } from './interfaces'
 
 export function numToString(n: number){
   return n.toLocaleString('en-US', { 

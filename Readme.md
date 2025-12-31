@@ -342,10 +342,22 @@ GraphQL Design Decisions
 - On mount call createClient and get Client object 
 - Call Client::subscribe passing query and handling response (map to model) 
 
-## 7. Add pagination to enable rendering large data sets
+## 7. Deploy app
 
-- Add page state
-  ```ts
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5;
+- Create subdomain and minimal Nginx config
+  ```nginx
+  server {
+    server_name webshop.barryonweb.com;
+
+    root /var/www/webshop/frontend;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+  }
   ```
+
+- Create CI/CD yaml (enable site and reload Nginx)
+- Commit and push to GitHub
+- Add TLS to Nginx config
