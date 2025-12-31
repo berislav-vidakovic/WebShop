@@ -347,13 +347,22 @@ GraphQL Design Decisions
 - Create subdomain and minimal Nginx config
   ```nginx
   server {
+    listen 80;
     server_name webshop.barryonweb.com;
 
     root /var/www/webshop/frontend;
     index index.html;
 
+    # Serve static assets directly
+    location /assets/ {
+      try_files $uri =404;
+      expires 1y;
+      add_header Cache-Control "public, immutable";
+    }
+
+    # SPA fallback
     location / {
-        try_files $uri /index.html;
+      try_files $uri /index.html;
     }
   }
   ```
@@ -361,3 +370,6 @@ GraphQL Design Decisions
 - Create CI/CD yaml (enable site and reload Nginx)
 - Commit and push to GitHub
 - Add TLS to Nginx config
+  ```bash
+  sudo certbot --nginx -d webshop.barryonweb.com
+  ```
