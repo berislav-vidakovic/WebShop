@@ -286,7 +286,7 @@ TODO
 
 - Create project skeleton
 	```bash
-	npm create vite@latest webshop -- --template react-ts
+	npm create vite@latest webshop -- --template react-ts 
   cd webshop
   npm install
 	```

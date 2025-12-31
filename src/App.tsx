@@ -157,7 +157,7 @@ function App() {
   return (
     <div className="app">
       <div>
-        <h1>IT equipment WebShop</h1>
+        <h1>IT equipment WebShop @ Barry75</h1>
         <hr />
         <h2>{currentTable}</h2>
 
