@@ -1,0 +1,18 @@
+image: ubuntu:latest
+
+stages:
+  - test
+
+test_ssh:
+  stage: test
+  when: manual
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_cicd
+    - chmod 600 ~/.ssh/gitlab_cicd
+    - ssh-keyscan -p 2026 barryonweb.com >> ~/.ssh/known_hosts
+  script:
+    - ssh -i ~/.ssh/gitlab_cicd -p 2026 -o StrictHostKeyChecking=no barry75@barryonweb.com "echo Connected successfully from GitLab to Linux server!"
