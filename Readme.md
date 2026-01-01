@@ -29,6 +29,10 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
 3. [Introduce Hasura](#3-introduce-hasura)
 4. [Enable TLS to Hasura](#4-enable-tls-to-hasura)
 5. [Build Frontend Skeleton (React + TypeScript)](#5-build-frontend-skeleton-react--typescript)
+6. [GraphQL Queries, Mutations and Subscriptions](#6-graphql-queries-mutations-and-subscriptions)
+7. [GitHub Deployment to Linux server](#7-github-deployment-to-linux-server)
+8. [Link Project to GitLab](#8-link-project-to-gitlab)
+9. [Add Unit Tests](#9-add-unit-tests)
 
 ## 1. Create PostgreSQL database and populate tables
 
@@ -342,7 +346,7 @@ GraphQL Design Decisions
 - On mount call createClient and get Client object 
 - Call Client::subscribe passing query and handling response (map to model) 
 
-## 7. Deploy app
+## 7. GitHub Deployment to Linux server
 
 - Create subdomain and minimal Nginx config
   ```nginx
@@ -360,7 +364,7 @@ GraphQL Design Decisions
   }
   ```
 
-- Create CI/CD yaml (enable site and reload Nginx)
+- Create <a href=".github/workflows/deploy.yaml">GitHub CI/CD yaml</a> file (enable site and reload Nginx)
 - Commit and push to GitHub
 - Add TLS to Nginx config
   ```bash
@@ -408,4 +412,25 @@ GraphQL Design Decisions
   - Key: SSH_PRIVATE_KEY
   - Value: private key gitlab_cicd
 - Append public key to Linux server
+- Add <a href=".gitlab-ci.yml">GitLab CI/CD yaml </a> file to project root
    
+## 9. Add Unit tests 
+
+- Install Vitest
+  ```bash
+  npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom
+  ```
+- Add scripts to package.json 
+  ```js
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run"
+  },
+  ```
+
+- Add <a href="src/utils.test.ts">unit test </a>for utils.ts module
+- Run unit test
+  ```bash
+  npm test
+  ```
+

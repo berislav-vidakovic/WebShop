@@ -1,15 +1,26 @@
 image: node:20
 
 stages:
+  - test
   - build
   - deploy
 
 variables:
   SSH_PORT: 2026
 
+# Test job
+test_frontend:
+  stage: test
+  script:
+    - npm ci
+    - npm run test:ci
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
 # Build job
 build_frontend:
   stage: build
+  needs: ["test_frontend"]
   script:
     - npm install
     - npm run build
