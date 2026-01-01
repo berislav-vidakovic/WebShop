@@ -27,7 +27,6 @@ build_frontend:
 deploy_frontend:
   stage: deploy
   needs: ["build_frontend"]
-  when: manual  # Optional: manual trigger, can remove for auto-deploy
   before_script:
     - apt-get update -y
     - apt-get install -y openssh-client
