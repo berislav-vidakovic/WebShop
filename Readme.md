@@ -367,4 +367,33 @@ GraphQL Design Decisions
   sudo certbot --nginx -d webshop.barryonweb.com
   ```
 
+## 8. Link project to GitLab
+
+- Create blank project on GitLab
+- Establish SSH connection
+  - Generate key pair using ssh-keygen
+  - Edit Profile - SSH keys - paste public key
+  - Test from terminal - explicit key usage
+    ```bash
+    ssh -i ~/.ssh/dev_gitlab -T git@gitlab.com
+    ```
+  - Add to ~/.ssh/config
+    ```bash
+    Host gitlab.com
+      HostName gitlab.com
+      User git
+      IdentityFile ~/.ssh/dev_gitlab
+      IdentitiesOnly yes
+    ```
+  - Test from terminal - default key
+    ```bash
+    ssh -i ~/.ssh/dev_gitlab -T git@gitlab.com
+    ```
+- Add GitLab as a remote Repo
+  ```bash
+  git remote add gitlab git@gitlab.com:Barry75/webshop.git
+  ```  
+- Push code to GitLab
+  ```bash
   
+  ```
