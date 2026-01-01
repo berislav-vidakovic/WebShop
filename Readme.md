@@ -434,3 +434,17 @@ GraphQL Design Decisions
   npm test
   ```
 
+- Wire Unit Test into  <a href=".gitlab-ci.yml">GitLab CI</a>
+
+- Add coverage reporting
+  - Install coverage provider
+    ```bash
+    npm install -D @vitest/coverage-v8
+    ```
+  - Update <a href="vite.config.ts">defineConfig</a> and adjust import in vite.config.ts
+  - Add test:coverage script to package.json
+  - Verify locally 
+    ```bash
+    npm run test:coverage
+    ```
+
