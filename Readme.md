@@ -36,7 +36,7 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
 
 ## 1. Create PostgreSQL database and populate tables
 
-![ERD diagram](data/ERD.png)
+![ERD diagram](docs/ERD.png)
 
 - Create DB and schema
   ```bash
@@ -434,7 +434,6 @@ GraphQL Design Decisions
   npm run test
   ```
 
-- Wire Unit Test into  <a href=".gitlab-ci.yml">GitLab CI</a>
 
 - Add coverage reporting
   - Install coverage provider
@@ -449,3 +448,6 @@ GraphQL Design Decisions
     ```
 
 - Add <a href="src/graphQL/queries.test.ts">integration test </a> for queries.ts module with mock data 
+
+- Wire Unit and Integration Tests into  <a href=".gitlab-ci.yml">GitLab CI</a>
+- Wire Unit and Integration Tests into  <a href=".github/workflows/deploy.yaml">GitHub CI</a>
