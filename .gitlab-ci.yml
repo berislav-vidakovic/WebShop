@@ -7,12 +7,7 @@ stages:
 variables:
   SSH_PORT: 2026
 
-# Only run pipeline automatically for main branch pushes
-workflow:
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-    - when: manual
-
+# Build job
 build_frontend:
   stage: build
   script:
@@ -22,8 +17,9 @@ build_frontend:
     paths:
       - dist/
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: '$CI_COMMIT_BRANCH == "main"'  # only run on main branch
 
+# Deploy job
 deploy_frontend:
   stage: deploy
   needs: ["build_frontend"]
@@ -36,7 +32,6 @@ deploy_frontend:
     - chmod 600 ~/.ssh/gitlab_cicd
     - ssh-keyscan -p $SSH_PORT barryonweb.com >> ~/.ssh/known_hosts
   script:
-    # Transfer Nginx config
     - scp -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
     - ssh -i ~/.ssh/gitlab_cicd -p $SSH_PORT barry75@barryonweb.com "
         sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
@@ -44,7 +39,7 @@ deploy_frontend:
         sudo nginx -t &&
         sudo systemctl reload nginx
       "
-    # Deploy frontend build
     - scp -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
   rules:
-    - if: $CI_COMMIT_BRANCH == "main"
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual   # makes deploy job manual
