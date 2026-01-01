@@ -15,4 +15,4 @@ test_ssh:
     - chmod 600 ~/.ssh/gitlab_cicd
     - ssh-keyscan -p 2026 barryonweb.com >> ~/.ssh/known_hosts
   script:
-    - ssh -p 2026 barry75@barryonweb.com "echo Connected successfully from GitLab to Linux server!"
+    - ssh -i ~/.ssh/gitlab_cicd -p 2026 -o StrictHostKeyChecking=no barry75@barryonweb.com "echo Connected successfully from GitLab to Linux server!"
