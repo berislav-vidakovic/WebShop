@@ -32,7 +32,7 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
 6. [GraphQL Queries, Mutations and Subscriptions](#6-graphql-queries-mutations-and-subscriptions)
 7. [GitHub Deployment to Linux server](#7-github-deployment-to-linux-server)
 8. [Link Project to GitLab](#8-link-project-to-gitlab)
-9. [Add Unit Tests](#9-add-unit-tests)
+9. [Add Unit Tests and Integration tests](#9-add-unit-tests-and-integration-tests)
 
 ## 1. Create PostgreSQL database and populate tables
 
@@ -414,7 +414,7 @@ GraphQL Design Decisions
 - Append public key to Linux server
 - Add <a href=".gitlab-ci.yml">GitLab CI/CD yaml </a> file to project root
    
-## 9. Add Unit tests 
+## 9. Add Unit tests and Integration tests
 
 - Install Vitest
   ```bash
@@ -431,7 +431,7 @@ GraphQL Design Decisions
 - Add <a href="src/utils.test.ts">unit test </a>for utils.ts module
 - Run unit test
   ```bash
-  npm test
+  npm run test
   ```
 
 - Wire Unit Test into  <a href=".gitlab-ci.yml">GitLab CI</a>
@@ -448,3 +448,4 @@ GraphQL Design Decisions
     npm run test:coverage
     ```
 
+- Add <a href="src/graphQL/queries.test.ts">integration test </a> for queries.ts module with mock data 

@@ -1,7 +1,7 @@
 import type { Customer, Product, OrderItem } from '../interfaces'
 import { numToString } from '../utils';
+import { sendGraphQLquery } from './api.ts' 
 
-const hasuraURL = "https://hasura.barryonweb.com/v1/graphql";
 
 export const fetchCustomers = async (): Promise<Customer[]> => {
   try {
@@ -94,15 +94,3 @@ export const fetchProducts = async (): Promise<Product[]> => {
   }
 }
 
-//generic function
-export async function sendGraphQLquery(body: string){
-  const res = await fetch( hasuraURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body
-  });  
-  const json = await res.json();
-  return json;
-}

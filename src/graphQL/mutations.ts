@@ -1,4 +1,4 @@
-import { sendGraphQLquery } from "./queries";
+import { sendGraphQLquery } from "./api";
 import type { OrderDraftItem } from '../interfaces'
 
 // Using single GraphQL mutation with nested inserts
