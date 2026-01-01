@@ -32,14 +32,14 @@ deploy_frontend:
     - chmod 600 ~/.ssh/gitlab_cicd
     - ssh-keyscan -p $SSH_PORT barryonweb.com >> ~/.ssh/known_hosts
   script:
-    - scp -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
+    - scp -i ~/.ssh/gitlab_cicd -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
     - ssh -i ~/.ssh/gitlab_cicd -p $SSH_PORT barry75@barryonweb.com "
         sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
         sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
         sudo nginx -t &&
         sudo systemctl reload nginx
       "
-    - scp -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
+    - scp -i ~/.ssh/gitlab_cicd -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: manual   # makes deploy job manual
