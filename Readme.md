@@ -91,7 +91,7 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
 
 ##  2. Introduce Docker
 
-### 1. Run update and upgrade
+### 2.1. Run update and upgrade
   - Update APT package cache using apt update - refresh system's list of available software (package index)
   - apt upgrade downloads and installs newer versions of currently installed packages, using the information from update
     ```bash
@@ -99,7 +99,7 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
     sudo apt upgrade -y
     ```
 
-### 2. Prerequisites
+### 2.2. Prerequisites
   - Check installation (Output ii  curl 8.5.0-2ubuntu10.6 ->ii=installed and configured) 
     - apt-transport-https + ca-certificates → make secure HTTPS downloads possible
     - curl → download Docker GPG key
@@ -118,7 +118,7 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
     sudo apt install apt-transport-https
     ```
 
-### 3.Add Docker's official GPG key
+### 2.3.Add Docker's official GPG key
 
 GPG, or GNU Privacy Guard, is a public key cryptography implementation. This allows for the secure transmission of information between parties and can be used to verify that the origin of a message is genuine.
   - Download Docker's public GPG key from Docker site
@@ -127,7 +127,7 @@ GPG, or GNU Privacy Guard, is a public key cryptography implementation. This all
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     ```
 
-### 4. Install Docker Engine
+### 2.4. Install Docker Engine
 
 
 - Update APT package cache
@@ -369,6 +369,9 @@ GraphQL Design Decisions
 
 ## 8. Link project to GitLab
 
+### 8.1. Link Dev with GitLab
+
+
 - Create blank project on GitLab
 - Establish SSH connection
   - Generate key pair using ssh-keygen
@@ -395,5 +398,14 @@ GraphQL Design Decisions
   ```  
 - Push code to GitLab
   ```bash
-  
+  git push gitlab main
   ```
+
+### 8.2. Link GitLab with Linux server
+
+- Generate SHH key pair
+- GitLab Repo - Settings-CI/CD - Add variable
+  - Key: SSH_PRIVATE_KEY
+  - Value: private key gitlab_cicd
+- Append public key to Linux server
+  
