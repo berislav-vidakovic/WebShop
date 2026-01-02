@@ -451,3 +451,17 @@ GraphQL Design Decisions
 
 - Wire Unit and Integration Tests into  <a href=".gitlab-ci.yml">GitLab CI</a>
 - Wire Unit and Integration Tests into  <a href=".github/workflows/deploy.yaml">GitHub CI</a>
+
+
+## 10. Add system test as TAS and integrate into CI/CD 
+
+### 10.1. Staging environment setup in Docker container
+
+- Create minimal <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
+- Create <a href="Dockerfile">Dockerfile</a> in parent folder, webshop and TAS in the same level
+ - Build and run docker image:
+    ```bash
+    docker build -t webshop-staging-tas .
+    docker run -it --rm -p 8080:80 webshop-staging-tas:latest
+    ```
+

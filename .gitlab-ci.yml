@@ -3,6 +3,7 @@ image: node:20
 stages:
   - test
   - build
+  - staging_tas
   - deploy
 
 variables:
