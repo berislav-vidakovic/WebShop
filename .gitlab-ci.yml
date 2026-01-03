@@ -46,10 +46,7 @@ run_tas:
     branch: main
     strategy: depend              # wait for TAS result
     forward:
-      pipeline_variables: true    # forward variables if needed
-  artifacts:
-    paths:
-      - dist/                    # forward SUT artifacts automatically
+      pipeline_variables: true    # forward variables if needed  
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
