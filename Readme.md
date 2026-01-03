@@ -497,15 +497,15 @@ GraphQL Design Decisions
   - trigger TAS
     - Trigger TypeScript TAS <a href="CICD/gitlab/triggerTASts.yml">GitLab</a> / <a href="CICD/github/triggerTASts.yml">GitHub</a>
     - Trigger Java TAS <a href="CICD/gitlab/triggerTASjava.yml">GitLab</a> / <a href="CICD/github/triggerTASjava.yml">Git Hub</a>
-- Hard gate  CI pipeline
+- Hard gate CI pipeline - staging environment
   - run unit + integration tests 
   - create atifacts for TAS to build staging environment
   - TAS - create staging environment based on input provided by SUT
     - use <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
     - use Dockerfile to build Docker image and run staging environment in Docker container
   - run TAS against staging environment (built and destroyed by TAS)
-    - Run TypeScript TAS <a href="CICD/gitlab/hardGateTASts.yml">GitLab</a> / <a href="CICD/github/hardGateTASts.yml">GitHub</a>
-    - Run Java TAS <a href="CICD/gitlab/hardGateTASjava.yml">GitLab</a> / <a href="CICD/gitlab/hardGateTASjava.yml">GitHub</a>
+    - Run TypeScript TAS <a href="CICD/gitlab/stagingTASts.yml">GitLab</a> / <a href="CICD/github/hardGateTASts.yml">GitHub</a>
+    - Run Java TAS <a href="CICD/gitlab/stagingTASjava.yml">GitLab</a> / <a href="CICD/gitlab/hardGateTASjava.yml">GitHub</a>
   - deployment to Linux server run or block depending on TAS outcome
 
 
