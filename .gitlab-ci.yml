@@ -64,11 +64,10 @@ deploy_frontend:
 # ---------------- TAS tests (Playwright) ------------------------------------
 run_tas:
   stage: tas
-  needs: ["deploy_frontend"]   # run after deploy is done
-  image: mcr.microsoft.com/playwright:v1.42.1-focal
-  script:
-    - npm ci
-    - npx playwright install
-    - npm run testGames
+  needs: ["deploy_frontend"]
+  trigger:
+    project: Barry75/tas-ts     # namespace/project-name
+    branch: main
+    strategy: depend            # frontend pipeline waits for TAS
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
