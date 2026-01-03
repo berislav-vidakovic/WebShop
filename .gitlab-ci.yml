@@ -50,7 +50,7 @@ run_tas:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
-# ---------------- Deploy Frontend ----------------
+# ---------------- Deploy Frontend -----------------------
 deploy_frontend:
   stage: deploy
   needs: ["build_frontend", "run_tas"]  # wait for TAS
