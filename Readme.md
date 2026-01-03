@@ -458,7 +458,7 @@ GraphQL Design Decisions
 ### 10.1. Staging environment setup in Docker container
 
 - Create minimal <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
-- Create <a href="Dockerfile">Dockerfile</a> in parent folder, webshop and TAS in the same level
+- Create <a href="CICD/Dockerfile">Dockerfile</a> in parent folder, webshop and TAS in the same level
  - Build and run docker image:
     ```bash
     docker build -t webshop-staging-tas .
@@ -502,7 +502,7 @@ GraphQL Design Decisions
   - create atifacts for TAS to build staging environment
   - TAS - create staging environment based on input provided by SUT
     - use <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
-    - use <a href="Dockerfile">Dockerfile</a> to build Docker image and run staging environment in Docker container
+    - use Dockerfile to build Docker image and run staging environment in Docker container
   - run TAS against staging environment (built and destroyed by TAS)
     - Run TypeScript TAS <a href="CICD/gitlab/hardGateTASts.yml">GitLab</a> / <a href="CICD/github/hardGateTASts.yml">GitHub</a>
     - Run Java TAS <a href="CICD/gitlab/hardGateTASjava.yml">GitLab</a> / <a href="CICD/gitlab/hardGateTASjava.yml">GitHub</a>

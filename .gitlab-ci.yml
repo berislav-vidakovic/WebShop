@@ -66,10 +66,9 @@ run_tas:
   stage: tas
   needs: ["deploy_frontend"]
   trigger:
-    project: Barry75/tas-ts     # namespace/project-name
+    project: Barry75/tas     # Java TAS
     branch: main
     strategy: depend            # frontend pipeline waits for TAS
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: always
-      
