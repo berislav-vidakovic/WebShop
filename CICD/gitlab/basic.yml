@@ -1,0 +1,63 @@
+image: node:20
+
+stages:
+  - test
+  - build
+  - staging_tas
+  - deploy
+
+variables:
+  SSH_PORT: 2026
+
+# Test job
+test_frontend:
+  stage: test
+  script:
+    - npm ci
+    - npm run test:ci # run unit + integration tests
+    - npm run test:coverage # generate coverage report
+  artifacts:
+    paths:
+      - coverage/
+    when: always
+  coverage: '/All files[^|]*\|[^|]*\s+(\d+)%/'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# Build job
+build_frontend:
+  stage: build
+  needs: ["test_frontend"]
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'  # only run on main branch
+
+# Deploy job
+deploy_frontend:
+  stage: deploy
+  needs: ["build_frontend"]
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/gitlab_cicd
+    - chmod 600 ~/.ssh/gitlab_cicd
+    - ssh-keyscan -p $SSH_PORT barryonweb.com >> ~/.ssh/known_hosts
+  script:
+    - scp -i ~/.ssh/gitlab_cicd -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
+    - ssh -i ~/.ssh/gitlab_cicd -p $SSH_PORT barry75@barryonweb.com "
+        sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
+        sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
+        sudo nginx -t &&
+        sudo systemctl reload nginx
+      "
+    - scp -i ~/.ssh/gitlab_cicd -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      # when: manual   # makes deploy job manual

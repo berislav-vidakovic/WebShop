@@ -465,3 +465,48 @@ GraphQL Design Decisions
     docker run -it --rm -p 8080:80 webshop-staging-tas:latest
     ```
 
+### 10.2. Three phase plan for implementing TAS 
+
+#### 1. Monitoring 
+  - Scheduled TAS running
+  - Production URL of SUT
+  - Outcome: Information only
+
+#### 2. Validation
+  - SUT pipeline triggers TAS
+  - The SUT pipeline decides to block based on TAS result
+
+#### 3. Full TAS integration (Pre-deploy hard gate)
+  - SUT pipeline 
+    - Build artifacts
+    - Trigger TAS
+  - TAS   
+    - build its own staging environment in Docker container
+    - run tests
+    - destroy environment
+  - SUT blocks deployment on failed TAS
+
+### 10.3. GitHub and GitLab CI/CD pipelines 
+
+- Basic CI pipeline <a href="CICD/gitlab/basic.yml">GitLab</a> /  <a href="CICD/github/basic.yml">GitHub</a>
+  - run unit + integration tests 
+  - deploy to Linux server
+- Triggering  CI pipeline
+  - run unit + integration tests 
+  - deploy to Linux server 
+  - trigger TAS
+    - Trigger TypeScript TAS <a href="CICD/gitlab/triggerTASts.yml">GitLab</a> / <a href="CICD/github/triggerTASts.yml">GitHub</a>
+    - Trigger Java TAS <a href="CICD/gitlab/triggerTASjava.yml">GitLab</a> / <a href="CICD/github/triggerTASjava.yml">Git Hub</a>
+- Hard gate  CI pipeline
+  - run unit + integration tests 
+  - create atifacts for TAS to build staging environment
+  - TAS - create staging environment based on input provided by SUT
+    - use <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
+    - use <a href="Dockerfile">Dockerfile</a> to build Docker image and run staging environment in Docker container
+  - run TAS against staging environment (built and destroyed by TAS)
+    - Run TypeScript TAS <a href="CICD/gitlab/hardGateTASts.yml">GitLab</a> / <a href="CICD/github/hardGateTASts.yml">GitHub</a>
+    - Run Java TAS <a href="CICD/gitlab/hardGateTASjava.yml">GitLab</a> / <a href="CICD/gitlab/hardGateTASjava.yml">GitHub</a>
+  - deployment to Linux server run or block depending on TAS outcome
+
+
+
