@@ -3,19 +3,19 @@ image: node:20
 stages:
   - test
   - build
-  - deploy
   - tas
+  - deploy
 
 variables:
   SSH_PORT: 2026
 
-# ---------------- Unit Tests + integration tests ----------------------------
+# ---------------- Unit + Integration Tests ----------------
 test_frontend:
   stage: test
   script:
     - npm ci
-    - npm run test:ci # run unit + integration tests
-    - npm run test:coverage # generate coverage report
+    - npm run test:ci           # unit + integration tests
+    - npm run test:coverage     # generate coverage report
   artifacts:
     paths:
       - coverage/
@@ -24,23 +24,39 @@ test_frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
-# ---------------- Build job--------------------------------------------------
+# ---------------- Build Frontend ----------------
 build_frontend:
   stage: build
-  needs: ["test_frontend"] # run after test is done
+  needs: ["test_frontend"]
   script:
     - npm install
     - npm run build
   artifacts:
     paths:
-      - dist/
+      - dist/                    # frontend artifacts
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'  # only run on main branch
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
-# ---------------- Deploy job-------------------------------------------------
+# ---------------- TAS (Pre-deployment) ----------------
+run_tas:
+  stage: tas
+  needs: ["build_frontend"]       # TAS runs after build
+  trigger:
+    project: Barry75/tas          # TAS repo
+    branch: main
+    strategy: depend              # wait for TAS result
+    forward:
+      pipeline_variables: true    # forward variables if needed
+  artifacts:
+    paths:
+      - dist/                    # forward SUT artifacts automatically
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# ---------------- Deploy Frontend ----------------
 deploy_frontend:
   stage: deploy
-  needs: ["build_frontend"] # run after build is done
+  needs: ["build_frontend", "run_tas"]  # wait for TAS
   before_script:
     - apt-get update -y
     - apt-get install -y openssh-client
@@ -50,25 +66,14 @@ deploy_frontend:
     - chmod 600 ~/.ssh/gitlab_cicd
     - ssh-keyscan -p $SSH_PORT barryonweb.com >> ~/.ssh/known_hosts
   script:
+    # Copy Nginx config
     - scp -i ~/.ssh/gitlab_cicd -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
     - ssh -i ~/.ssh/gitlab_cicd -p $SSH_PORT barry75@barryonweb.com "
         sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
         sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
         sudo nginx -t &&
         sudo systemctl reload nginx"
+    # Copy frontend artifacts
     - scp -i ~/.ssh/gitlab_cicd -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      # when: manual   # makes deploy job manual
-
-# ---------------- TAS tests (Playwright) ------------------------------------
-run_tas:
-  stage: tas
-  needs: ["deploy_frontend"]
-  trigger:
-    project: Barry75/tas     # Java TAS
-    branch: main
-    strategy: depend            # frontend pipeline waits for TAS
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
