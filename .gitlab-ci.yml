@@ -3,13 +3,13 @@ image: node:20
 stages:
   - test
   - build
-  - staging_tas
   - deploy
+  - tas
 
 variables:
   SSH_PORT: 2026
 
-# Test job
+# ---------------- Unit Tests + integration tests ----------------------------
 test_frontend:
   stage: test
   script:
@@ -24,10 +24,10 @@ test_frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
-# Build job
+# ---------------- Build job--------------------------------------------------
 build_frontend:
   stage: build
-  needs: ["test_frontend"]
+  needs: ["test_frontend"] # run after test is done
   script:
     - npm install
     - npm run build
@@ -37,10 +37,10 @@ build_frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'  # only run on main branch
 
-# Deploy job
+# ---------------- Deploy job-------------------------------------------------
 deploy_frontend:
   stage: deploy
-  needs: ["build_frontend"]
+  needs: ["build_frontend"] # run after build is done
   before_script:
     - apt-get update -y
     - apt-get install -y openssh-client
@@ -55,9 +55,20 @@ deploy_frontend:
         sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
         sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
         sudo nginx -t &&
-        sudo systemctl reload nginx
-      "
+        sudo systemctl reload nginx"
     - scp -i ~/.ssh/gitlab_cicd -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       # when: manual   # makes deploy job manual
+
+# ---------------- TAS tests (Playwright) ------------------------------------
+run_tas:
+  stage: tas
+  needs: ["deploy_frontend"]   # run after deploy is done
+  image: mcr.microsoft.com/playwright:v1.42.1-focal
+  script:
+    - npm ci
+    - npx playwright install
+    - npm run testGames
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
