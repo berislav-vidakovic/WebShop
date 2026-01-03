@@ -61,7 +61,7 @@ deploy_frontend:
     - if: '$CI_COMMIT_BRANCH == "main"'
       # when: manual   # makes deploy job manual
 
-# ---------------- TAS tests (Playwright) ------------------------------------
+# ---------------- TAS tests (Playwright) ------------------------------------ 
 run_tas:
   stage: tas
   needs: ["deploy_frontend"]
