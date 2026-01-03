@@ -24,7 +24,7 @@ test_frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
-# ---------------- Build Frontend --------------------
+# ---------------- Build Frontend ----------------------
 build_frontend:
   stage: build
   needs: ["test_frontend"]
@@ -70,7 +70,7 @@ deploy_frontend:
         sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
         sudo nginx -t &&
         sudo systemctl reload nginx"
-    # Copy frontend artifacts 
+    # Copy frontend artifacts
     - scp -i ~/.ssh/gitlab_cicd -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"' 
+    - if: '$CI_COMMIT_BRANCH == "main"'
