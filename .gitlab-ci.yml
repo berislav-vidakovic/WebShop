@@ -24,7 +24,7 @@ test_frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
-# ---------------- Build Frontend ----------------
+# ---------------- Build Frontend ------------------
 build_frontend:
   stage: build
   needs: ["test_frontend"]
