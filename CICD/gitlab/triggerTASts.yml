@@ -71,3 +71,5 @@ run_tas:
     strategy: depend            # frontend pipeline waits for TAS
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+      
