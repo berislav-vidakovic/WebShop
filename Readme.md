@@ -24,15 +24,18 @@ React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and W
 
 ## Table of contents 
 
+
 1. [Create PostgreSQL Database and Populate Tables](#1-create-postgresql-database-and-populate-tables)
 2. [Introduce Docker](#2-introduce-docker)
 3. [Introduce Hasura](#3-introduce-hasura)
 4. [Enable TLS to Hasura](#4-enable-tls-to-hasura)
 5. [Build Frontend Skeleton (React + TypeScript)](#5-build-frontend-skeleton-react--typescript)
 6. [GraphQL Queries, Mutations and Subscriptions](#6-graphql-queries-mutations-and-subscriptions)
-7. [GitHub Deployment to Linux server](#7-github-deployment-to-linux-server)
+7. [GitHub Deployment to Linux Server](#7-github-deployment-to-linux-server)
 8. [Link Project to GitLab](#8-link-project-to-gitlab)
-9. [Add Unit Tests and Integration tests](#9-add-unit-tests-and-integration-tests)
+9. [Add Unit Tests and Integration Tests](#9-add-unit-tests-and-integration-tests)
+10. [Add E2E Tests as TAS and Integrate into CI/CD](#10-add-e2e-test-as-tas-and-integrate-into-cicd)
+
 
 ## 1. Create PostgreSQL database and populate tables
 
@@ -239,7 +242,7 @@ Hasura runs in Docker and is exposed via a dedicated subdomain using Nginx as a 
   ping hasura.barryonweb.com
   ```
 
-- Configure Nginx as reverse proxy for Hasura
+- Configure <a href="nginx/hasura">Nginx as reverse proxy</a> for Hasura
 - Test in Browser
   ```bash
   http://hasura.barryonweb.com
@@ -453,17 +456,19 @@ GraphQL Design Decisions
 - Wire Unit and Integration Tests into  <a href=".github/workflows/deploy.yaml">GitHub CI</a>
 
 
-## 10. Add system test as TAS and integrate into CI/CD 
+## 10. Add E2E test as TAS and integrate into CI/CD 
 
 ### 10.1. Staging environment setup in Docker container
 
 - Create minimal <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
-- Create <a href="CICD/Dockerfile">Dockerfile</a> in parent folder, webshop and TAS in the same level
- - Build and run docker image:
-    ```bash
-    docker build -t webshop-staging-tas .
-    docker run -it --rm -p 8080:80 webshop-staging-tas:latest
-    ```
+- Staging environment testing setup:
+  - Create <a href="CICD/Dockerfile">Dockerfile</a> in parent folder 
+  - webshop and TAS in the same level
+  - Build and run docker image:
+      ```bash
+      docker build -t webshop-staging-tas .
+      docker run -it --rm -p 8080:80 webshop-staging-tas:latest
+      ```
 
 ### 10.2. Three phase plan for implementing TAS 
 
@@ -504,8 +509,8 @@ GraphQL Design Decisions
     - use <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
     - use Dockerfile to build Docker image and run staging environment in Docker container
   - run TAS against staging environment (built and destroyed by TAS)
-    - Run TypeScript TAS <a href="CICD/gitlab/stagingTASts.yml">GitLab</a> / <a href="CICD/github/hardGateTASts.yml">GitHub</a>
-    - Run Java TAS <a href="CICD/gitlab/stagingTASjava.yml">GitLab</a> / <a href="CICD/gitlab/hardGateTASjava.yml">GitHub</a>
+    - Run TypeScript TAS <a href="CICD/gitlab/stagingTASts.yml">GitLab</a> / <a href="CICD/github/stagingTASts.yml">GitHub</a>
+    - Run Java TAS <a href="CICD/gitlab/stagingTASjava.yml">GitLab</a> / <a href="CICD/github/stagingTASjava.yml">GitHub</a>
   - deployment to Linux server run or block depending on TAS outcome
 
 
