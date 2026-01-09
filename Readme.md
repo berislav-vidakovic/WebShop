@@ -1,517 +1,200 @@
-# Webshop serverless Project
-
-<div style="margin-bottom: 12px;">
-<img src = "docs/hasura.png" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/dockerc.png" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/GraphQL.png" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/nginx.jpg" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/postgresqlb.png" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/react.png" style="height:35px; margin-right: 15px;" /> 
-<img src = "docs/ts.png" style="height:35px; margin-right: 15px;" /> 
-</div>
-
-
-React + TypeScript frontend that connects to Hasura via GraphQL over HTTPS and WebSockets, handling queries, mutations, and subscriptions without a custom backend. Hasura is running as Docker container on Ubuntu VPS in separate subdomain.
-- Full PostgreSQL schema with multiple tables, relationships, and data loaded
-- Saved views for queries and sanity checks
-- ERD generated and ready to showcase database design
-- Docker installed and verified on Ubuntu, with Hasura running in a container
-- Hasura connected securely to PostgreSQL, including handling of container IPs and pg_hba.conf
-- TLS setup with Nginx and a subdomain for secure HTTPS access
-- Hasura Console running, queries, mutations, and subscriptions tested
-- React + TypeScript frontend working with Hasura over HTTPS and WebSockets
-
-
-## Table of contents 
-
-
-1. [Create PostgreSQL Database and Populate Tables](#1-create-postgresql-database-and-populate-tables)
-2. [Introduce Docker](#2-introduce-docker)
-3. [Introduce Hasura](#3-introduce-hasura)
-4. [Enable TLS to Hasura](#4-enable-tls-to-hasura)
-5. [Build Frontend Skeleton (React + TypeScript)](#5-build-frontend-skeleton-react--typescript)
-6. [GraphQL Queries, Mutations and Subscriptions](#6-graphql-queries-mutations-and-subscriptions)
-7. [GitHub Deployment to Linux Server](#7-github-deployment-to-linux-server)
-8. [Link Project to GitLab](#8-link-project-to-gitlab)
-9. [Add Unit Tests and Integration Tests](#9-add-unit-tests-and-integration-tests)
-10. [Add E2E Tests as TAS and Integrate into CI/CD](#10-add-e2e-test-as-tas-and-integrate-into-cicd)
-
-
-## 1. Create PostgreSQL database and populate tables
-
-![ERD diagram](docs/ERD.png)
-
-- Create DB and schema
-  ```bash
-  sudo -u postgres psql
-  CREATE DATABASE webshop OWNER barry75;
-  GRANT ALL PRIVILEGES ON DATABASE webshop TO barry75;
-  ```
-
-- Connect to PostgreSQL to default db, show dbs, switch, delete db
-  ```bash
-  psql -U barry75 -d postgres
-  \l
-  \c webshop
-  ```
-
-
-- Show databases and current database 
-  ```bash
-  \l
-  SELECT current_database();
-  ```
-
-- Apply schema.sql and verify
-  ```bash
-  psql -U barry75 -d webshop -f schema.sql
-  psql -U barry75 -d webshop
-  \dt
-  \d+ customers
-  ```
-
-- Populate tables with data.sql 
-  ```sql
-  psql -U barry75 -d webshop -f data.sql  
-  ```  
-
-- Save sanity check query as view
-  ```sql
-  CREATE VIEW order_details_v AS
-  SELECT
-    o.id AS order_id,
-    c.name AS customer,
-    p.name AS product,
-    oi.quantity,
-    o.order_date
-  FROM orders o
-  JOIN customers c ON o.customer_id = c.id
-  JOIN order_items oi ON o.id = oi.order_id
-  JOIN products p ON oi.product_id = p.id
-  ORDER BY o.id;
-  ```
-
-- Display View definition
-  ```sql
-  \d+ orders_all_v
-  ```
-
-##  2. Introduce Docker
-
-### 2.1. Run update and upgrade
-  - Update APT package cache using apt update - refresh system's list of available software (package index)
-  - apt upgrade downloads and installs newer versions of currently installed packages, using the information from update
-    ```bash
-    sudo apt update
-    sudo apt upgrade -y
-    ```
-
-### 2.2. Prerequisites
-  - Check installation (Output ii  curl 8.5.0-2ubuntu10.6 ->ii=installed and configured) 
-    - apt-transport-https + ca-certificates → make secure HTTPS downloads possible
-    - curl → download Docker GPG key
-    - gnupg → verify key integrity
-    - software-properties-common + lsb-release → help add the Docker repo based on your Ubuntu version
-      ```bash
-      dpkg -l apt-transport-https
-      dpkg -l ca-certificates
-      dpkg -l curl
-      dpkg -l gnupg
-      dpkg -l software-properties-common
-      dpkg -l lsb-release
-      ```
-  - Install missing packages
-    ```bash
-    sudo apt install apt-transport-https
-    ```
-
-### 2.3.Add Docker's official GPG key
-
-GPG, or GNU Privacy Guard, is a public key cryptography implementation. This allows for the secure transmission of information between parties and can be used to verify that the origin of a message is genuine.
-  - Download Docker's public GPG key from Docker site
-  - Convert the key into a “keyring” file format that APT can use securely and save it in /usr/share/keyrings/
-    ```bash
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    ```
-
-### 2.4. Install Docker Engine
-
-
-- Update APT package cache
-- Install Docker engine using the official script
-  ```bash
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sudo sh get-docker.sh
-  ```
-
-- Verify
-  ```bash
-  docker --version
-  ```
-
-- Verify Docker repository is added. Docker repo was added automatically by the official install script
-  ```bash
-  cat /etc/apt/sources.list.d/docker.list
-  ```
-
-- Add user to docker group, apply membership and verify
-  ```bash
-  whoami
-  groups
-  sudo usermod -aG docker barry75
-  newgrp docker
-  groups
-  ```
-
-- Verify Docker installation
-  ```bash
-  docker run hello-world
-  ```
-
-
-
-##  3. Introduce Hasura
-
-
-- Pull the official Hasura GraphQL engine image from Docker Hub
-  ```bash
-  docker pull hasura/graphql-engine:v2.30.0
-  ```
-
-- Check available ports
-  ```bash
-  sudo ss -tulpn | grep 8080
-  sudo lsof -i :8080
-  ```
-
-
-- Add allowed hosts in CIDR notation to /etc/postgresql/16/main/pg_hba.conf 
-  ```
-  host    webshop    barry75    172.17.0.0/16    md5
-  ```
-  - 172.17.0.0 → base network address
-  - /16 → network mask: the first 16 bits are fixed as the network part
-  - Remaining 16 bits are host bits, which can vary
-  - Any IP from 172.17.0.0 to 172.17.255.255 is in this subnet
-
-- Restart PostgreSQL
-  ```bash
-  sudo systemctl restart postgresql
-  ```
-
-- Run Hasura container
-  ```bash
-  docker run -d --name hasura -p 8083:8080 \
-  -e HASURA_GRAPHQL_DATABASE_URL=postgres://barry75:Pwd!@barryonweb.com:5432/webshop \
-  -e HASURA_GRAPHQL_ENABLE_CONSOLE=true \
-  -e HASURA_GRAPHQL_ENABLE_TELEMETRY=false 
-  hasura/graphql-engine:v2.30.0
-  ```
-
-- Check running containers, all (including stopped ones), remove
-  ```bash
-  docker ps
-  docker ps -a
-  docker rm hasura
-  ```
-
-- Check logs
-  ```bash
-  docker logs hasura
-  ```
-
-
-- Get the IP of Hasura Docker container on the Docker network. PostgreSQL sees a connection from this IP. It has to be configured in pg_hba.conf
-  ```bash
-  docker inspect hasura | grep -i ipaddress
-  ```
-
-
-- Test in Browser:
-  ```bash
-  http://barryonweb.com:8083
-  ```
-
-
-## 4. Enable TLS to Hasura
-
-Hasura runs in Docker and is exposed via a dedicated subdomain using Nginx as a reverse proxy with TLS termination via Let’s Encrypt.
-
-- Create subdomain hasura.barryonweb.com and verify
-  ```bash
-  ping hasura.barryonweb.com
-  ```
-
-- Configure <a href="nginx/hasura">Nginx as reverse proxy</a> for Hasura
-- Test in Browser
-  ```bash
-  http://hasura.barryonweb.com
-  ```
-
-- Enable HTTPS
-  ```bash
-  sudo certbot --nginx -d hasura.barryonweb.com
-  ```
-
-- Test in Browser
-  ```bash
-  https://hasura.barryonweb.com
-  ```
-
-- Test POST from Postman:
-  ```bash
-  https://hasura.barryonweb.com/v1/graphql
-  ```
-  ```graphql
-  { "query": "query GetCustomers { customers { id name city country } }" }
-  ```
-
-- Verify WebSockets (subscriptions)
-  - In Hasura console run query
-    ```graphql
-    subscription {
-      orders(order_by: { id: desc }) {
-        id
-        order_date
-        customer {
-          name
-        }
-      }
-    }
-    ```
-
-  - In DevTools->Network->Sockets Request URL:
-    ```bash
-    wss://hasura.barryonweb.com/v1/graphql
-    ``` 
-
-TODO
-- Add admin secret to Hasura
-- Create roles (user, admin)
-
-## 5. Build Frontend skeleton React + TypeScript
-
-- Create project skeleton
-	```bash
-	npm create vite@latest webshop -- --template react-ts 
-  cd webshop
-  npm install
-	```
-
-- Run dev, build for production, check Ts
-  ```bash
-  npm run dev
-  npm run build
-  npx tsc --noEmit
-  ```
-
-- Explicitly set port in vite.config.ts
-  ```ts
-  export default defineConfig({
-    plugins: [react()],
-    server: { port: 5180 }
-  })
-  ```
-
-- Link to Remote Repo on Github
-  - Initialize git
-    ```bash
-    git init
-    git add .
-    git commit -m "Initial commit"
-    ```
-  - Create Remote repo
-  - Link and verify
-    ```bash
-    git remote add origin git@github.com:berislav-vidakovic/WebShop.git
-    git remote -v
-    ```
-  
-  - Push code (--set-upstream or -u flag)
-    ```bash
-    git push -u origin main
-    ```
-
-- Add query and call it from App.txs
-
-## 6. GraphQL queries, mutations and subscriptions
-
-GraphQL Design Decisions
-- This project primarily uses GraphQL relationships generated by Hasura to demonstrate nested querying and client-driven data fetching
-- SQL views are used selectively for aggregation and reporting use cases where relational computation is more efficient at the database layer
-
-- Adding support for subscriptions
-  - Install dependency
-  ```bash
-  npm install graphql-ws
-  ```
-
-- On mount call createClient and get Client object 
-- Call Client::subscribe passing query and handling response (map to model) 
-
-## 7. GitHub Deployment to Linux server
-
-- Create subdomain and minimal Nginx config
-  ```nginx
-  server {
-    listen 80;
-    server_name webshop.barryonweb.com;
-
-    root /var/www/webshop/frontend;
-    index index.html;
-
-    # SPA fallback
-    location / {
-      try_files $uri /index.html;
-    }
+# WebShop — Full Stack E‑Commerce Project
+
+A modern full‑stack e‑commerce web application implemented with React, GraphQL, Hasura, PostgreSQL, Docker, and Nginx.
+
+This project demonstrates building a **front‑end** with **React + TypeScript** that consumes a **GraphQL backend (Hasura)** securely over HTTPS and WebSockets, without needing a custom backend server. Hasura and PostgreSQL run as Docker containers on an Ubuntu VPS with TLS termination managed by Nginx.
+
+---
+
+## 🚀 Live Demo / Preview
+
+> 🔗 Demo: https://webshop.barryonweb.com/ 
+
+📸 *(Sreenshots)*
+
+---
+
+## 🧠 Project Summary
+
+WebShop is a showcase e‑commerce platform with:
+
+- **React + TypeScript frontend** built with Vite
+- **GraphQL API** powered by **Hasura**
+- **PostgreSQL database** storing product and order information
+- **Dockerized infrastructure** for consistent testing and deployment
+- **HTTPS via Nginx reverse proxy with TLS**
+- Real-time subscriptions via GraphQL WebSockets
+
+---
+
+## 🛠 Technologies Used
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | React, TypeScript, Vite |
+| API | Hasura GraphQL Engine |
+| Database | PostgreSQL |
+| Infrastructure | Docker, Nginx, Ubuntu |
+| Protocols | HTTPS, WebSockets |
+| Others | GraphQL for data fetching |
+
+There is building log available in <a href="docs/Details.md">separate document</a>
+
+---
+
+## 🚧 Key Features
+
+### 📌 User Experience  
+- Responsive UI built with modern React patterns  
+- Product browsing and search  
+- Real-time updates via subscriptions
+
+### 📌 Data & Backend  
+- GraphQL queries, mutations, and subscriptions  
+- Fully normalized PostgreSQL schema  
+- ERD & views for dashboard reporting
+
+### 📌 Deployment & DevOps  
+- Docker containers for consistent environments  
+- Nginx TLS termination
+- CI pipelines in place (GitHub, GitLab)  
+- Staging workflows with dockerized services
+
+---
+
+## 📦 Setup & Local Development
+
+### Prerequisites
+
+Install:
+
+- Node.js (>=16.x)
+- Docker & Docker Compose
+- PostgreSQL
+- Hasura CLI (optional)
+
+---
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/berislav-vidakovic/WebShop.git
+cd WebShop
+```
+
+---
+
+### 2. Backend Services (PostgreSQL + Hasura)
+
+Create PostgreSQL database:
+
+```bash
+sudo -u postgres psql
+CREATE DATABASE webshop OWNER <your‑user>;
+GRANT ALL PRIVILEGES ON DATABASE webshop TO <your‑user>;
+```
+
+Load schema and data:
+
+```bash
+psql -U <user> webshop -f data/schema.sql
+psql -U <user> webshop -f data/data.sql
+```
+
+Run Hasura (example):
+
+```bash
+docker run -d   --name hasura   -p 8083:8080   -e HASURA_GRAPHQL_DATABASE_URL=postgres://<user>:<pw>@<host>:5432/webshop   hasura/graphql-engine
+```
+
+---
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open in browser:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 💡 Deployment
+
+- Configure Nginx as reverse proxy with HTTPS for your domain
+- Ensure TLS is enabled via Certbot or similar
+- Host Hasura and PostgreSQL secured services
+- Build and deploy frontend as static assets or via container
+
+Example Nginx config:
+
+```nginx
+server {
+  listen 80;
+  server_name yourdomain.com;
+  location / {
+    try_files $uri /index.html;
   }
-  ```
+}
+```
 
-- Create <a href=".github/workflows/deploy.yaml">GitHub CI/CD yaml</a> file (enable site and reload Nginx)
-- Commit and push to GitHub
-- Add TLS to Nginx config
-  ```bash
-  sudo certbot --nginx -d webshop.barryonweb.com
-  ```
+---
 
-## 8. Link project to GitLab
+## 📊 Database Design
 
-### 8.1. Link Dev with GitLab
+This project contains a full ERD illustrating relationships between:
 
+- Users
+- Products
+- Orders
+- OrderItems
+- Categories
 
-- Create blank project on GitLab
-- Establish SSH connection
-  - Generate key pair using ssh-keygen
-  - Edit Profile - SSH keys - paste public key
-  - Test from terminal - explicit key usage
-    ```bash
-    ssh -i ~/.ssh/dev_gitlab -T git@gitlab.com
-    ```
-  - Add to ~/.ssh/config
-    ```bash
-    Host gitlab.com
-      HostName gitlab.com
-      User git
-      IdentityFile ~/.ssh/dev_gitlab
-      IdentitiesOnly yes
-    ```
-  - Test from terminal - default key
-    ```bash
-    ssh -i ~/.ssh/dev_gitlab -T git@gitlab.com
-    ```
-- Add GitLab as a remote Repo
-  ```bash
-  git remote add gitlab git@gitlab.com:Barry75/webshop.git
-  ```  
-- Push code to GitLab
-  ```bash
-  git push gitlab main
-  ```
+Include or link ERD image in this section.
 
-### 8.2. Link GitLab with Linux server
+---
 
-- Generate SHH key pair
-- GitLab Repo - Settings-CI/CD - Add variable
-  - Key: SSH_PRIVATE_KEY
-  - Value: private key gitlab_cicd
-- Append public key to Linux server
-- Add <a href=".gitlab-ci.yml">GitLab CI/CD yaml </a> file to project root
-   
-## 9. Add Unit tests and Integration tests
+## 🧪 Testing
 
-- Install Vitest
-  ```bash
-  npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom
-  ```
-- Add scripts to package.json 
-  ```js
-  "scripts": {
-    "test": "vitest",
-    "test:ci": "vitest run"
-  },
-  ```
+- Unit tests for frontend (Vitest, Jest)
+- Integration testing for GraphQL queries
+- Mock tests for edge case scenarios
 
-- Add <a href="src/utils.test.ts">unit test </a>for utils.ts module
-- Run unit test
-  ```bash
-  npm run test
-  ```
+---
 
+## 🙋 Contribution
 
-- Add coverage reporting
-  - Install coverage provider
-    ```bash
-    npm install -D @vitest/coverage-v8
-    ```
-  - Update <a href="vite.config.ts">defineConfig</a> and adjust import in vite.config.ts
-  - Add test:coverage script to package.json
-  - Verify locally 
-    ```bash
-    npm run test:coverage
-    ```
+Feel free to improve features or add new ones:
 
-- Add <a href="src/graphQL/queries.test.ts">integration test </a> for queries.ts module with mock data 
+1. Fork repository
+2. Create feature branch
+3. Send pull request
 
-- Wire Unit and Integration Tests into  <a href=".gitlab-ci.yml">GitLab CI</a>
-- Wire Unit and Integration Tests into  <a href=".github/workflows/deploy.yaml">GitHub CI</a>
+---
 
+## 📬 Contact
 
-## 10. Add E2E test as TAS and integrate into CI/CD 
+**Berislav Vidakovic**  
+GitHub: https://github.com/berislav-vidakovic  
+Email: your.email@example.com  
+LinkedIn: https://linkedin.com/in/yourprofile
 
-### 10.1. Staging environment setup in Docker container
+---
 
-- Create minimal <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
-- Staging environment testing setup:
-  - Create <a href="CICD/Dockerfile">Dockerfile</a> in parent folder 
-  - webshop and TAS in the same level
-  - Build and run docker image:
-      ```bash
-      docker build -t webshop-staging-tas .
-      docker run -it --rm -p 8080:80 webshop-staging-tas:latest
-      ```
+## 🏆 Why This Project Matters
 
-### 10.2. Three phase plan for implementing TAS 
+This project showcases:
 
-#### 1. Monitoring 
-  - Scheduled TAS running
-  - Production URL of SUT
-  - Outcome: Information only
+✔ Full stack development with modern tools  
+✔ Secure production-grade deployment  
+✔ Real-time client-server interaction via GraphQL  
+✔ Containerization & infrastructure automation  
+✔ Strong architectural patterns
 
-#### 2. Validation
-  - SUT pipeline triggers TAS
-  - The SUT pipeline decides to block based on TAS result
-
-#### 3. Full TAS integration (Pre-deploy hard gate)
-  - SUT pipeline 
-    - Build artifacts
-    - Trigger TAS
-  - TAS   
-    - build its own staging environment in Docker container
-    - run tests
-    - destroy environment
-  - SUT blocks deployment on failed TAS
-
-### 10.3. GitHub and GitLab CI/CD pipelines 
-
-- Basic CI pipeline <a href="CICD/gitlab/basic.yml">GitLab</a> /  <a href="CICD/github/basic.yml">GitHub</a>
-  - run unit + integration tests 
-  - deploy to Linux server
-- Triggering  CI pipeline
-  - run unit + integration tests 
-  - deploy to Linux server 
-  - trigger TAS
-    - Trigger TypeScript TAS <a href="CICD/gitlab/triggerTASts.yml">GitLab</a> / <a href="CICD/github/triggerTASts.yml">GitHub</a>
-    - Trigger Java TAS <a href="CICD/gitlab/triggerTASjava.yml">GitLab</a> / <a href="CICD/github/triggerTASjava.yml">Git Hub</a>
-- Hard gate CI pipeline - staging environment
-  - run unit + integration tests 
-  - create atifacts for TAS to build staging environment
-  - TAS - create staging environment based on input provided by SUT
-    - use <a href="webshop-staging.conf">Nginx config file</a> with HTTP only 
-    - use Dockerfile to build Docker image and run staging environment in Docker container
-  - run TAS against staging environment (built and destroyed by TAS)
-    - Run TypeScript TAS <a href="CICD/gitlab/stagingTASts.yml">GitLab</a> / <a href="CICD/github/stagingTASts.yml">GitHub</a>
-    - Run Java TAS <a href="CICD/gitlab/stagingTASjava.yml">GitLab</a> / <a href="CICD/github/stagingTASjava.yml">GitHub</a>
-  - deployment to Linux server run or block depending on TAS outcome
-
-
-
+*(This README aims to attract recruiters by explaining the project clearly and professionally.)*

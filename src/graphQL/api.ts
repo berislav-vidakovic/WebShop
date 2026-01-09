@@ -1,4 +1,4 @@
-const hasuraURL = "https://hasura.barryonweb.com/v1/graphql";
+const hasuraURL = "https://hasura-dev.barryonweb.com/v1/graphql";
 
 //generic function
 export async function sendGraphQLquery(body: string){

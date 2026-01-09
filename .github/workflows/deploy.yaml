@@ -53,10 +53,10 @@ jobs:
       # Nginx config - transfer, enable, check syntax and restart Nginx
       - name: Update Nginx config
         run: |
-          scp -P $SSH_PORT webshop.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
+          scp -P $SSH_PORT webshop-dev.barryonweb.com barry75@barryonweb.com:/var/www/webshop/
           ssh -p $SSH_PORT barry75@barryonweb.com "
-            sudo cp /var/www/webshop/webshop.barryonweb.com /etc/nginx/sites-available/ &&
-            sudo ln -sf /etc/nginx/sites-available/webshop.barryonweb.com /etc/nginx/sites-enabled/ &&
+            sudo cp /var/www/webshop/webshop-dev.barryonweb.com /etc/nginx/sites-available/ &&
+            sudo ln -sf /etc/nginx/sites-available/webshop-dev.barryonweb.com /etc/nginx/sites-enabled/ &&
             sudo nginx -t &&
             sudo systemctl reload nginx"
       
