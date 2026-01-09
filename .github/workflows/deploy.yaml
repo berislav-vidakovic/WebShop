@@ -68,7 +68,7 @@ jobs:
       # Copy Dockerfile and scripts to run containers
       - name: Copy containerization scripts
         run: |
-          scp -P $SSH_PORT runFrontendContainer.sh barry75@barryonweb.com:/var/www/webshop/
+          scp -P $SSH_PORT runFrontendTestContainer.sh barry75@barryonweb.com:/var/www/webshop/
           scp -P $SSH_PORT runHasuraDevContainer.sh barry75@barryonweb.com:/var/www/webshop/
           scp -P $SSH_PORT runHasuraTestContainer.sh barry75@barryonweb.com:/var/www/webshop/
           scp -P $SSH_PORT Dockerfile barry75@barryonweb.com:/var/www/webshop/
