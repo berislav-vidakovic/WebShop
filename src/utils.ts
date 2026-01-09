@@ -27,8 +27,9 @@ export async function loadConfig(
   }
   
   const config = await response.json();
-  hasuraQueryURL = config.hasuraHttpUrl;
-  hasuraSubscriptionURL = config.hasuraWsUrl;
+  const env = window.location.hostname.includes("-test") ? "test" : "dev";
+  hasuraQueryURL = config[env].hasuraHttpUrl;
+  hasuraSubscriptionURL = config[env].hasuraWsUrl;
   setConfigLoaded(true);
 }
 

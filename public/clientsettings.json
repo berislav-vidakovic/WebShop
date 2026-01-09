@@ -1,4 +1,11 @@
 {
-  "hasuraHttpUrl": "https://hasura-dev.barryonweb.com/v1/graphql",
-  "hasuraWsUrl": "wss://hasura-dev.barryonweb.com/v1/graphql"
+  "dev" : {
+    "hasuraHttpUrl": "https://hasura-dev.barryonweb.com/v1/graphql",
+    "hasuraWsUrl": "wss://hasura-dev.barryonweb.com/v1/graphql"
+  },
+  "test" : {
+    "hasuraHttpUrl": "https://hasura-test.barryonweb.com/v1/graphql",
+    "hasuraWsUrl": "wss://hasura-test.barryonweb.com/v1/graphql"
+  }
 }
+
