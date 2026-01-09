@@ -67,8 +67,9 @@ function App() {
   }, [isConfigLoaded]);
 
   useEffect(() => {
+    if( !isConfigLoaded) return;
     useOrdersSubscription(setOrdersMaster);
-  }, []);
+  }, [isConfigLoaded]);
 
   useEffect(() => {
     initializeView(currentTable);
