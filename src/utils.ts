@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 
 
-const hasuraQueryURL = "https://hasura-dev.barryonweb.com/v1/graphql";
-const hasuraSubscriptionURL = "wss://hasura-dev.barryonweb.com/v1/graphql"
+let hasuraQueryURL = "";
+let hasuraSubscriptionURL = "";
 
 
 export const getHasuraQueryUrl  = (): string => {
@@ -15,10 +15,20 @@ export const getHasuraSubscriptionUrl  = (): string => {
 
 
 
-export function loadConfig(
+export async function loadConfig(
     setConfigLoaded:  Dispatch<SetStateAction<boolean>>
 ){
+  const response = await fetch('/clientsettings.json', {
+    cache: 'no-store'
+  });
 
+  if (!response.ok) {
+    throw new Error('Failed to load clientsettings.json');
+  }
+  
+  const config = await response.json();
+  hasuraQueryURL = config.hasuraHttpUrl;
+  hasuraSubscriptionURL = config.hasuraWsUrl;
   setConfigLoaded(true);
 }
 

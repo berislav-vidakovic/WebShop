@@ -9,3 +9,5 @@ docker run -d --name hasura-dev -p 8083:8080 \
 -e HASURA_GRAPHQL_ENABLE_CONSOLE=true \
 -e HASURA_GRAPHQL_ENABLE_TELEMETRY=false \
 hasura/graphql-engine:v2.30.0
+
+echo "Hasura Dev started on Port 8083"

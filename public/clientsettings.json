@@ -1,0 +1,4 @@
+{
+  "hasuraHttpUrl": "https://hasura-dev.barryonweb.com/v1/graphql",
+  "hasuraWsUrl": "wss://hasura-dev.barryonweb.com/v1/graphql"
+}

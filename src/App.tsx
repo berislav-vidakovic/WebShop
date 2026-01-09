@@ -52,7 +52,9 @@ function App() {
   const rowsPerPage = 5;
 
   useEffect(() => {
-    loadConfig(setConfigLoaded);
+    (async () => { // IIFE
+      await loadConfig(setConfigLoaded);
+     })();
   }, []);
 
   useEffect(() => {
