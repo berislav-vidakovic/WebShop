@@ -13,7 +13,7 @@ import { Selector } from './tables/Selector'
 import { Master } from './tables/Master'
 import { OrderDialog } from './dialogs/OrderDialog'
 import { placeNewOrderMutation, updateOrderMutation } from './graphQL/mutations'
-import { numToString, strToNum } from './utils';
+import { loadConfig, numToString, strToNum } from './utils';
 
 function App() {
   const [currentTable, setCurrentTable] = useState<TableType>("Customers");
@@ -45,17 +45,24 @@ function App() {
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false);
 
   // Edit order - related states
-  const [selectedOrderId, setSelectedOrderId] = useState<number>(2);
 
+  const [selectedOrderId, setSelectedOrderId] = useState<number>(2);
+  const [isConfigLoaded, setConfigLoaded] = useState<boolean>(false);
   
   const rowsPerPage = 5;
 
   useEffect(() => {
+    loadConfig(setConfigLoaded);
+  }, []);
+
+  useEffect(() => {
+    if( !isConfigLoaded) return;
+    console.log("Config is loaded OK");
     fetchCustomers().then(setCustomers);
     fetchProducts().then(setProducts);
     fetchOrderItems().then(setOrderItems);
     initializeView("Customers");
-  }, []);
+  }, [isConfigLoaded]);
 
   useEffect(() => {
     useOrdersSubscription(setOrdersMaster);

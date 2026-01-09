@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { OrderView } from '../interfaces'
 import { createClient } from 'graphql-ws';
-import { numToString } from '../utils';
+import { getHasuraSubscriptionUrl, numToString } from '../utils';
 
 /*
 PostgreSQL view definition:
@@ -51,7 +51,7 @@ interface OrdersAllVResponse {
 export function useOrdersSubscription(
   setOrdersMaster: Dispatch<SetStateAction<OrderView[]>> ) {
   const wsClient = createClient({
-    url: 'wss://hasura.barryonweb.com/v1/graphql',
+    url: getHasuraSubscriptionUrl(),
     // connectionParams can be added later if needed
   });
 

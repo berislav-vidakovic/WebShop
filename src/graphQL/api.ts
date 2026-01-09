@@ -1,8 +1,10 @@
-const hasuraURL = "https://hasura-dev.barryonweb.com/v1/graphql";
+import { getHasuraQueryUrl } from "../utils";
+
 
 //generic function
 export async function sendGraphQLquery(body: string){
-  const res = await fetch( hasuraURL, {
+  console.log("Send GraphQL query to ...", getHasuraQueryUrl() )
+  const res = await fetch( getHasuraQueryUrl(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
