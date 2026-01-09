@@ -28,7 +28,6 @@ export async function loadConfig(
   
   const config = await response.json();
   console.log( "HOSTNAME:", window.location.hostname );
-  console.log( "HOST:", window.location.host );
   const env = window.location.hostname.includes("-test") ? "test" : "dev";
   hasuraQueryURL = config[env].hasuraHttpUrl;
   hasuraSubscriptionURL = config[env].hasuraWsUrl;

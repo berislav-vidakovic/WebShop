@@ -64,3 +64,12 @@ jobs:
       - name: Deploy frontend via SCP
         run: |
           scp -r -P $SSH_PORT dist/* barry75@barryonweb.com:/var/www/webshop/frontend/
+
+      # Copy Dockerfile and scripts to run containers
+      - name: Copy containerization scripts
+        run: |
+          scp -P $SSH_PORT runFrontendContainer.sh barry75@barryonweb.com:/var/www/webshop/
+          scp -P $SSH_PORT runHasuraDevContainer.sh barry75@barryonweb.com:/var/www/webshop/
+          scp -P $SSH_PORT runHasuraTestContainer.sh barry75@barryonweb.com:/var/www/webshop/
+          scp -P $SSH_PORT Dockerfile barry75@barryonweb.com:/var/www/webshop/
+      

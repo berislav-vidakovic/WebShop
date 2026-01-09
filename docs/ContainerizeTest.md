@@ -18,7 +18,7 @@
   ```bash
   docker build -t webshop-frontend-test .
   ```
-- Run Docker container
+- Add script for run Frontend container
   ```bash
   # Stop old container if exists
   docker rm -f webshop-frontend-test >/dev/null 2>&1 || true
@@ -46,9 +46,8 @@
   ```bash
   https://webshop-test.barryonweb.com/
   ```
-- Add clientsettings.json Test version su subdirectory /test
-- Update the test frontend run script - **mount test/clientsettings.json**
+- Insert build Docker image into script for run Frontend container:
   ```bash
-  -v /var/www/webshop/test/clientsettings.json:/usr/share/nginx/html/clientsettings.json:ro \
+
   ```
 
