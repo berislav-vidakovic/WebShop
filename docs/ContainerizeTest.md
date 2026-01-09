@@ -1,3 +1,29 @@
+# Test environment containerization
+
+- Designed and implemented a fully containerized multi-environment web application using Docker, Hasura, and Postgres 
+- Built Dev and Test environments with separate databases and subdomains, configured dynamic runtime frontend settings via a single JSON file, and automated deployment through CI/CD scripts 
+- Delivered a maintainable, scalable workflow where frontend automatically adapts to the target environment without rebuilds, demonstrating full-stack, DevOps-aware expertise
+
+## Hasura
+
+- Split Dev and Test into separate subdomains
+- Run Test Hasura container:
+  ```bash
+  #!/bin/bash
+  set -e
+
+  # Stop and remove any existing container
+  docker rm -f hasura-test >/dev/null 2>&1 || true
+
+  docker run -d --name hasura-test -p 8088:8080 \
+  -e HASURA_GRAPHQL_DATABASE_URL=postgres://barry75:abc123@barryonweb.com:5432/webshop_test \
+  -e HASURA_GRAPHQL_ENABLE_CONSOLE=true \
+  -e HASURA_GRAPHQL_ENABLE_TELEMETRY=false \
+  hasura/graphql-engine:v2.30.0
+
+  echo "Hasura Test started on Port 8088"
+  ```
+
 ## Frontend containerization
 
 - Add Dockerfile

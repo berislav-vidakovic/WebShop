@@ -8,7 +8,7 @@ This project demonstrates building a **front‑end** with **React + TypeScript**
 
 ## 🚀 Live Demo / Preview
 
-> 🔗 Demo: https://webshop.barryonweb.com/ 
+> 🔗 Demo: https://webshop-test.barryonweb.com/ 
 
 📸 *(Sreenshots)*
 
